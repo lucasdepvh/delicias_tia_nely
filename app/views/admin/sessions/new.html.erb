@@ -1,0 +1,12 @@
+<% content_for :title, "Iniciar sessão" %>
+<div class="auth-card">
+  <h1>Administração</h1>
+  <p>Use as credenciais de administrador configuradas para a loja.</p>
+  <%= form_with model: resource, as: resource_name, url: session_path(resource_name) do |form| %>
+    <div class="field"><%= form.label :email, "E-mail" %><%= form.email_field :email, autofocus: true, autocomplete: "email", required: true %></div>
+    <div class="field"><%= form.label :password, "Senha" %><%= form.password_field :password, autocomplete: "current-password", required: true %></div>
+    <% if devise_mapping.rememberable? %><div class="field"><label><%= form.check_box :remember_me %> Manter sessão</label></div><% end %>
+    <%= form.submit "Entrar", class: "button" %>
+  <% end %>
+  <% if devise_mapping.recoverable? %><p><%= link_to "Esqueci minha senha", new_admin_password_path %></p><% end %>
+</div>

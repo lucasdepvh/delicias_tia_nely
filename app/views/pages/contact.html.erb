@@ -1,0 +1,20 @@
+<% content_for :title, "Contato" %>
+<section class="institutional-page" aria-labelledby="contato-titulo">
+  <div class="institutional-page__intro">
+    <p class="storefront-kicker">Contato</p>
+    <h1 id="contato-titulo">Canais de atendimento.</h1>
+    <p>Os contatos oficiais serão informados aqui assim que estiverem definidos pela responsável pela loja.</p>
+  </div>
+  <div class="contact-status-card">
+    <span aria-hidden="true">↗</span>
+    <div>
+      <h2>Atendimento em atualização</h2>
+      <% if @store_setting.business_hours.present? %>
+        <p><strong>Horários informados:</strong> <%= @store_setting.business_hours %></p>
+      <% else %>
+        <p>Os horários e canais de atendimento ainda não foram publicados.</p>
+      <% end %>
+    </div>
+  </div>
+  <%= link_to "Voltar ao cardápio", produtos_path, class: "storefront-secondary-action" %>
+</section>

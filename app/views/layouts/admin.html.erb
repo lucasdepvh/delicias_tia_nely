@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="<%= asset_path('Logo Principal.png') %>" type="image/png">
+    <meta name="robots" content="noindex, nofollow">
+    <title><%= page_title([ "Administração", content_for(:title) ].compact_blank.join(" — ")) %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0" rel="stylesheet">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <%= stylesheet_link_tag "style", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="admin-dashboard-shell admin-shell--sidebar">
+    <aside class="admin-sidebar" aria-label="Navegação administrativa">
+      <%= link_to admin_root_path, class: "admin-dashboard-brand", aria: { label: "Início da administração" } do %>
+          <%= image_tag "Logo Principal.png", alt: "Logo Delícias da Tia Nely", class: "admin-dashboard-brand__mark" %>
+          <span><strong>Tia Nely · Gestão</strong><small>Administração</small></span>
+      <% end %>
+      <p class="admin-sidebar__label">Gestão da loja</p>
+      <nav class="admin-sidebar__nav">
+        <%= link_to admin_root_path, aria: { current: current_page?(admin_root_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">grid_view</span>Visão geral<% end %>
+        <%= link_to admin_products_path, aria: { current: current_page?(admin_products_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>Produtos<% end %>
+        <%= link_to admin_categories_path, aria: { current: current_page?(admin_categories_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">category</span>Categorias<% end %>
+        <%= link_to admin_orders_path, aria: { current: current_page?(admin_orders_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">receipt_long</span>Pedidos<% end %>
+        <%= link_to admin_customers_path, aria: { current: current_page?(admin_customers_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">group</span>Clientes<% end %>
+        <%= link_to admin_financial_entries_path, aria: { current: current_page?(admin_financial_entries_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">account_balance_wallet</span>Financeiro<% end %>
+        <span title="Módulo ainda não implementado"><span class="material-symbols-rounded" aria-hidden="true">bar_chart</span>Análise de vendas<small>Em breve</small></span>
+      </nav>
+      <div class="admin-sidebar__footer"><%= link_to root_path do %><span class="material-symbols-rounded" aria-hidden="true">storefront</span>Ver vitrine<% end %><%= button_to destroy_admin_session_path, method: :delete do %><span class="material-symbols-rounded" aria-hidden="true">logout</span>Sair<% end %></div>
+    </aside>
+    <div class="admin-workspace"><header class="admin-workspace__topbar"><span class="admin-dashboard-role">Administração</span><%= link_to "Ver vitrine", root_path, class: "admin-dashboard-view-store" %></header><% flash.each do |type, message| %><div class="admin-dashboard-flash flash <%= "flash--alert" if type.to_s == "alert" %>" role="status"><%= message %></div><% end %><main class="admin-dashboard-main"><%= yield %></main></div>
+    <nav class="admin-mobile-nav" aria-label="Navegação administrativa"><%= link_to admin_root_path, aria: { current: current_page?(admin_root_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">home</span>Início<% end %><%= link_to admin_products_path, aria: { current: current_page?(admin_products_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>Produtos<% end %><%= link_to admin_orders_path, aria: { current: current_page?(admin_orders_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">receipt_long</span>Pedidos<% end %><%= link_to admin_customers_path, aria: { current: current_page?(admin_customers_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">group</span>Clientes<% end %><%= link_to admin_financial_entries_path, aria: { current: current_page?(admin_financial_entries_path) ? "page" : nil } do %><span class="material-symbols-rounded" aria-hidden="true">account_balance_wallet</span>Financeiro<% end %></nav>
+  </body>
+</html>

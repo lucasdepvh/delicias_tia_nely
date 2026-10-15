@@ -1,0 +1,31 @@
+pt-BR:
+  hello: "Olá"
+  activerecord:
+    attributes:
+      admin:
+        email: "E-mail"
+        password: "Senha"
+      store_setting:
+        store_name: "Nome da loja"
+        whatsapp_number: "WhatsApp"
+    errors:
+      messages:
+        record_invalid: "A validação falhou: %{errors}"
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      blank: "não pode ficar em branco"
+      taken: "já está em uso"
+      invalid: "não é válido"
+      greater_than_or_equal_to: "deve ser maior ou igual a %{count}"
+  devise:
+    sessions:
+      signed_in: "Sessão iniciada com sucesso."
+      signed_out: "Sessão encerrada com sucesso."
+      already_signed_out: "A sessão já estava encerrada."
+    failure:
+      unauthenticated: "Faça login para continuar."
+      invalid: "E-mail ou senha inválidos."
+    passwords:
+      send_instructions: "Se o e-mail existir, as instruções de recuperação serão enviadas."
+      updated: "Sua senha foi alterada com sucesso."

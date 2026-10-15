@@ -1,0 +1,16 @@
+<% content_for :title, "Categorias" %>
+<div class="admin-resource">
+  <div class="admin-resource__heading">
+    <div><p class="admin-dashboard__eyebrow">Catálogo</p><h1>Categorias</h1><p>Organize como os produtos aparecem na vitrine.</p></div>
+    <%= link_to "Nova categoria", new_admin_category_path, class: "button" %>
+  </div>
+  <% if @categories.any? %>
+    <div class="admin-resource__list">
+      <% @categories.each do |category| %>
+        <article><div><strong><%= category.name %></strong><small><span class="admin-state <%= 'admin-state--muted' unless category.active? %>"><%= category.active? ? "Ativa" : "Inativa" %></span> Posição <%= category.position %></small></div><div class="admin-resource__actions"><%= link_to "Editar", edit_admin_category_path(category) %> <%= button_to "Excluir", admin_category_path(category), method: :delete, form: { data: { turbo_confirm: "Excluir esta categoria?" } }, class: "admin-resource__delete" %></div></article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="admin-resource__empty"><strong>Nenhuma categoria cadastrada.</strong><span>Crie uma categoria para começar a organizar o cardápio.</span></div>
+  <% end %>
+</div>

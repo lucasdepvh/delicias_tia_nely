@@ -1,0 +1,30 @@
+<% if products.any? %>
+  <div class="product-grid">
+    <% products.each do |product| %>
+      <article class="product-card">
+        <%= link_to produto_path(product.slug), class: "product-card__link", aria: { label: "Ver detalhes de #{product.name}" } do %>
+          <div class="product-card__visual">
+            <% if product.main_image_attached? %><%= image_tag product.main_image, alt: "Imagem de #{product.name}" %><% else %><span aria-hidden="true"><%= product.name.first.upcase %></span><% end %>
+            <% if product.featured? %><small>Destaque</small><% end %>
+          </div>
+          <div class="product-card__content">
+            <p class="product-card__category"><%= product.category.name %></p>
+            <h2><%= product.name %></h2>
+            <% if product.description.present? %><p class="product-card__description"><%= truncate(product.description, length: 104) %></p><% end %>
+            <div class="product-card__footer">
+              <strong><%= format_brl(product.price) %></strong>
+              <span class="product-card__availability <%= "product-card__availability--unavailable" unless product.available? %>"><%= product.available? ? "Disponível" : "Indisponível" %></span>
+            </div>
+          </div>
+        <% end %>
+      </article>
+    <% end %>
+  </div>
+<% else %>
+  <div class="storefront-empty-card">
+    <div class="storefront-empty-card__icon" aria-hidden="true">♡</div>
+    <p class="storefront-kicker">Novidades chegando</p>
+    <h2>Os sabores serão publicados aqui.</h2>
+    <p>A loja ainda está organizando produtos, disponibilidade e formas de pedido. Assim que tudo estiver pronto, esta vitrine será atualizada.</p>
+  </div>
+<% end %>

@@ -1,0 +1,10 @@
+<% content_for :title, "Alterar senha" %>
+<div class="auth-card">
+  <h1>Escolha uma nova senha</h1>
+  <%= form_with model: resource, as: resource_name, url: password_path(resource_name), method: :put do |form| %>
+    <%= form.hidden_field :reset_password_token %>
+    <div class="field"><%= form.label :password, "Nova senha" %><%= form.password_field :password, autocomplete: "new-password", required: true %></div>
+    <div class="field"><%= form.label :password_confirmation, "Confirme a nova senha" %><%= form.password_field :password_confirmation, autocomplete: "new-password", required: true %></div>
+    <%= form.submit "Alterar senha", class: "button" %>
+  <% end %>
+</div>

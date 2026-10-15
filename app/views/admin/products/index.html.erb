@@ -1,0 +1,16 @@
+<% content_for :title, "Produtos" %>
+<div class="admin-resource">
+  <div class="admin-resource__heading">
+    <div><p class="admin-dashboard__eyebrow">Catálogo</p><h1>Produtos</h1><p>Cadastre os itens que serão exibidos na vitrine.</p></div>
+    <%= link_to "Novo produto", new_admin_product_path, class: "button" %>
+  </div>
+  <% if @products.any? %>
+    <div class="admin-resource__list">
+      <% @products.each do |product| %>
+        <article><div><strong><%= product.name %></strong><small><%= product.category.name %> · <%= format_brl(product.price) %> · <span class="admin-state <%= 'admin-state--muted' unless product.active? %>"><%= product.active? ? "Ativo" : "Inativo" %></span></small></div><div class="admin-resource__actions"><%= link_to "Editar", edit_admin_product_path(product) %> <%= button_to "Excluir", admin_product_path(product), method: :delete, form: { data: { turbo_confirm: "Excluir este produto?" } }, class: "admin-resource__delete" %></div></article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="admin-resource__empty"><strong>Nenhum produto cadastrado.</strong><span>Cadastre um produto quando as informações estiverem prontas.</span></div>
+  <% end %>
+</div>

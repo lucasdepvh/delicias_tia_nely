@@ -1,0 +1,21 @@
+<% content_for :title, @category ? @category.name : "Produtos" %>
+<% content_for :description, "Conheça os sabores disponíveis da #{brand_name}." %>
+
+<section class="catalog-page" aria-labelledby="catalogo-titulo">
+  <div class="catalog-page__intro">
+    <p class="storefront-kicker"><%= @category ? "Categoria" : "Cardápio" %></p>
+    <h1 id="catalogo-titulo"><%= @category ? @category.name : "Sabores para adoçar o seu dia." %></h1>
+    <p><%= @category&.description.presence || "Confira os produtos disponíveis no cardápio da Tia Nely." %></p>
+  </div>
+
+  <% if @categories.any? %>
+    <nav class="storefront-chips" aria-label="Filtrar produtos por categoria">
+      <%= link_to "Todos", produtos_path, class: "storefront-chip #{@category.nil? ? 'storefront-chip--active' : ''}" %>
+      <% @categories.each do |category| %>
+        <%= link_to category.name, categoria_path(category.slug), class: "storefront-chip #{@category == category ? 'storefront-chip--active' : ''}" %>
+      <% end %>
+    </nav>
+  <% end %>
+
+  <%= render "grid", products: @products %>
+</section>

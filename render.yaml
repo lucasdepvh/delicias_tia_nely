@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: delicias-da-tia-nely
+    runtime: ruby
+    buildCommand: sh ./bin/render-build.sh
+    preDeployCommand: sh ./bin/render-postdeploy.sh
+    startCommand: bundle exec puma -C config/puma.rb
+    healthCheckPath: /health
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_SERVE_STATIC_FILES
+        value: "true"
+      - key: STORAGE_PATH
+        value: /opt/render/project/src/storage
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: APP_HOST
+        sync: false
+      - key: RAILS_MASTER_KEY
+        sync: false
+    disk:
+      name: delicias-storage
+      mountPath: /opt/render/project/src/storage
+      sizeGB: 1

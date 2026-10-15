@@ -1,0 +1,12 @@
+<%= form_with model: [:admin, product], class: "admin-form" do |form| %>
+  <% if product.errors.any? %><div class="flash flash--alert" role="alert"><%= product.errors.full_messages.to_sentence %></div><% end %>
+  <div class="admin-form__field"><%= form.label :category_id, "Categoria" %><%= form.collection_select :category_id, Category.display_order, :id, :name, { prompt: "Selecione" }, required: true %></div>
+  <div class="admin-form__field"><%= form.label :name, "Nome" %><%= form.text_field :name, autofocus: true, required: true %></div>
+  <div class="admin-form__field"><%= form.label :slug, "Slug (opcional)" %><%= form.text_field :slug %><small>Usado no endereço do produto.</small></div>
+  <div class="admin-form__field"><%= form.label :description, "Descrição" %><%= form.text_area :description %></div>
+  <div class="admin-form__field"><%= form.label :main_image, "Imagem principal do produto" %><%= form.file_field :main_image, accept: "image/png,image/jpeg,image/webp" %><small>Envie PNG, JPEG ou WEBP de até 5 MB. Uma imagem é recomendada antes de publicar o produto.</small><% if product.main_image_attached? %><%= image_tag product.main_image, class: "admin-product-image-preview", alt: "Imagem atual de #{product.name}" %><% end %></div>
+  <div class="admin-form__split"><div class="admin-form__field"><%= form.label :price, "Preço base" %><%= form.number_field :price, step: 0.01, min: 0, required: true %></div><div class="admin-form__field"><%= form.label :position, "Ordem de exibição" %><%= form.number_field :position, min: 0 %></div></div>
+  <fieldset class="admin-form__fieldset"><legend>Estoque</legend><label class="admin-form__check"><%= form.check_box :track_inventory %><span>Controlar estoque deste produto</span></label><div class="admin-form__split"><div class="admin-form__field"><%= form.label :quantity, "Quantidade" %><%= form.number_field :quantity, min: 0 %></div><div class="admin-form__field"><%= form.label :low_stock_threshold, "Alerta de estoque baixo" %><%= form.number_field :low_stock_threshold, min: 0 %></div></div></fieldset>
+  <div class="admin-form__checks"><label class="admin-form__check"><%= form.check_box :active %><span>Produto ativo na vitrine</span></label><label class="admin-form__check"><%= form.check_box :featured %><span>Marcar como destaque</span></label></div>
+  <div class="admin-form__footer"><%= link_to "Cancelar", admin_products_path, class: "admin-form__cancel" %><%= form.submit "Salvar produto", class: "button" %></div>
+<% end %>

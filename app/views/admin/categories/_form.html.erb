@@ -1,0 +1,9 @@
+<%= form_with model: [:admin, category], class: "admin-form" do |form| %>
+  <% if category.errors.any? %><div class="flash flash--alert" role="alert"><%= category.errors.full_messages.to_sentence %></div><% end %>
+  <div class="admin-form__field"><%= form.label :name, "Nome" %><%= form.text_field :name, autofocus: true, required: true %></div>
+  <div class="admin-form__field"><%= form.label :slug, "Slug (opcional)" %><%= form.text_field :slug %><small>Usado no endereço da categoria.</small></div>
+  <div class="admin-form__field"><%= form.label :description, "Descrição" %><%= form.text_area :description %></div>
+  <div class="admin-form__field"><%= form.label :position, "Ordem de exibição" %><%= form.number_field :position, min: 0 %></div>
+  <label class="admin-form__check"><%= form.check_box :active %><span>Categoria ativa na vitrine</span></label>
+  <div class="admin-form__footer"><%= link_to "Cancelar", admin_categories_path, class: "admin-form__cancel" %><%= form.submit "Salvar categoria", class: "button" %></div>
+<% end %>

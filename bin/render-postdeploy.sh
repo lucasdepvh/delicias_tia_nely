@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+set -eu
+
+bundle exec rails db:migrate
+bundle exec rails db:migrate:status

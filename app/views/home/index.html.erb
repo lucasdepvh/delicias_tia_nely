@@ -1,0 +1,23 @@
+<% content_for :title, "Sabores artesanais" %>
+<% content_for :description, "Conheça os sabores disponíveis da Delícias da Tia Nely." %>
+
+<section class="storefront-dashboard" aria-labelledby="vitrine-titulo">
+  <div class="storefront-dashboard__intro">
+    <p class="storefront-kicker">Feito com carinho</p>
+    <h1 id="vitrine-titulo">Delícias que deixam qualquer momento mais gostoso.</h1>
+    <p>Conheça o cardápio da Tia Nely, com receitas preparadas para compartilhar à mesa.</p>
+    <%= link_to "Ver cardápio", produtos_path, class: "storefront-primary-action" %>
+  </div>
+
+  <% if @categories.any? %><nav class="storefront-chips" aria-label="Categorias do cardápio"><%= link_to "Todos", produtos_path, class: "storefront-chip storefront-chip--active" %><% @categories.each do |category| %><%= link_to category.name, categoria_path(category.slug), class: "storefront-chip" %><% end %></nav><% end %>
+
+  <%= render "products/grid", products: @products %>
+
+  <aside class="storefront-order-note">
+    <span class="storefront-order-note__icon" aria-hidden="true">↗</span>
+    <div>
+      <strong>Pedidos ainda não estão disponíveis</strong>
+      <p><%= @store_setting.pause_message.presence || StoreSetting::DEFAULT_PAUSE_MESSAGE %></p>
+    </div>
+  </aside>
+</section>

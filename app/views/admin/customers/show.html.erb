@@ -1,0 +1,4 @@
+<% content_for :title, @customer.name %>
+<div class="admin-resource"><div class="admin-resource__heading"><div><p class="admin-dashboard__eyebrow">Cliente</p><h1><%= @customer.name %></h1><p><%= @customer.phone %><%= " · #{@customer.email}" if @customer.email.present? %></p></div><%= link_to "Editar", edit_admin_customer_path(@customer), class: "button" %></div>
+  <div class="admin-resource__empty"><strong>Dados de entrega</strong><span><%= [@customer.street, @customer.number, @customer.neighborhood, @customer.city, @customer.state, @customer.zip_code].compact_blank.join(", ").presence || "Nenhum endereço informado." %></span><% if @customer.reference.present? %><span>Referência: <%= @customer.reference %></span><% end %><% if @customer.notes.present? %><span>Observações: <%= @customer.notes %></span><% end %></div>
+</div>

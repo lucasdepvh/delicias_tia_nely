@@ -1,0 +1,7 @@
+test:
+  service: Disk
+  root: <%= ENV.fetch("TEST_STORAGE_PATH", Rails.root.join("storage")).then { |path| File.join(path, "uploads/test") } %>
+
+local:
+  service: Disk
+  root: <%= ENV.fetch("STORAGE_PATH", Rails.root.join("storage")).then { |path| File.join(path, "uploads/#{Rails.env}") } %>
