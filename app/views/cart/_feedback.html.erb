@@ -1,0 +1,9 @@
+<div class="cart-feedback <%= "cart-feedback--error" if error %>" role="status">
+  <div>
+    <strong><%= error ? "Não foi possível atualizar o carrinho" : "Pronto!" %></strong>
+    <span><%= message %></span>
+  </div>
+  <% if added && !error %>
+  <% end %>
+</div>
+

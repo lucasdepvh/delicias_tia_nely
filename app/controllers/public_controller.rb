@@ -5,11 +5,6 @@ class PublicController < ApplicationController
 
   private
 
-  def current_cart
-    @current_cart ||= Cart.new(session)
-  end
-  helper_method :current_cart
-
   def require_accepting_orders!
     setting = StoreSetting.current
     return if setting.accepting_orders?

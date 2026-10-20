@@ -2,6 +2,7 @@ require "test_helper"
 
 class ProductCatalogTest < ActionDispatch::IntegrationTest
   setup do
+    @setting = StoreSetting.create!(singleton_key: StoreSetting::SINGLETON_KEY, store_name: "Loja de teste", whatsapp_number: "5511999999999", accepting_orders: true, minimum_order_value: 0, default_delivery_fee: 10)
     @category = Category.create!(name: "Cremosos", slug: "cremosos", active: true)
     @available_product = Product.create!(category: @category, name: "Quitanda cremosa", slug: "quitanda-cremosa", price: 5.5, active: true)
     @sold_out_product = Product.create!(category: @category, name: "Quitanda esgotada", slug: "quitanda-esgotada", price: 6, active: true, track_inventory: true, quantity: 0)
@@ -18,6 +19,20 @@ class ProductCatalogTest < ActionDispatch::IntegrationTest
     assert_select ".product-card", /Quitanda esgotada/
     assert_select ".product-card", text: /Quitanda inativa/, count: 0
     assert_select ".product-card__availability", /Indisponível/
+    assert_select "form[action='#{cart_items_path}'] input[name='cart_item[product_id]'][value='#{@available_product.id}']"
+  end
+
+  test "card de produto com variacao direciona para escolha e loja pausada desabilita compra" do
+    @available_product.product_variants.create!(name: "Grande", active: true, quantity: 4)
+
+    get produtos_path
+    assert_select "a.product-card__buy[href='#{produto_path(@available_product.slug)}']", "Comprar"
+    assert_select "form[action='#{cart_items_path}'] input[value='#{@available_product.id}']", count: 0
+
+    @available_product.product_variants.update_all(active: false)
+    @setting.update!(accepting_orders: false)
+    get produtos_path
+    assert_select "button.product-card__buy[disabled]", /Pedidos pausados/
   end
 
   test "categoria e detalhe do produto ativo são públicos" do
@@ -32,6 +47,30 @@ class ProductCatalogTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", @available_product.name
     assert_select ".product-detail__availability", /Disponível no cardápio/
+  end
+
+  test "produto com opções sem estoque não mostra seletor vazio nem formulário de compra" do
+    @available_product.product_variants.create!(name: "Grande", active: true, quantity: 0)
+    @available_product.update!(track_inventory: true, quantity: 0)
+
+    get produto_path(@available_product.slug)
+
+    assert_response :success
+    assert_select ".product-detail__availability", /Indisponível no momento/
+    assert_select ".product-detail__variants", count: 0
+    assert_select "form[action='#{cart_items_path}']", count: 0
+    assert_select ".product-detail__notice", /indisponível no momento/
+  end
+  test "estoque do produto permite compra direta quando as opções não têm saldo" do
+    @available_product.update!(track_inventory: true, quantity: 7)
+    @available_product.product_variants.create!(name: "Grande", active: true, quantity: 0)
+
+    get produto_path(@available_product.slug)
+
+    assert_response :success
+    assert_select ".product-detail__availability", /Disponível no cardápio/
+    assert_select ".product-detail__variants", count: 0
+    assert_select "form[action='#{cart_items_path}'] input[name='cart_item[product_id]'][value='#{@available_product.id}']"
   end
 
   test "produto inativo não é exposto diretamente" do

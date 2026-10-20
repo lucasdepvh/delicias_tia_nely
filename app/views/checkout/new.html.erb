@@ -1,10 +1,146 @@
 <% content_for :title, "Finalizar pedido" %>
-<section class="commerce-page" data-controller="checkout" aria-labelledby="checkout-titulo"><p class="storefront-kicker">Último passo</p><h1 id="checkout-titulo">Finalizar pedido</h1>
-  <%= form_with url: finalizar_pedido_path, class: "checkout-layout", data: { turbo: false } do |form| %><div class="checkout-form">
-    <% if @order.errors.any? || @customer.errors.any? %><div class="form-errors"><strong>Revise os campos indicados:</strong><ul><% (@order.errors.full_messages + @customer.errors.full_messages).uniq.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
-    <fieldset><legend>Identificação</legend><label>Nome <%= text_field_tag "customer[name]", @customer.name, required: true, autocomplete: "name" %></label><label>WhatsApp <%= telephone_field_tag "customer[phone]", @customer.phone, required: true, autocomplete: "tel" %></label><label>E-mail (opcional) <%= email_field_tag "customer[email]", @customer.email, autocomplete: "email" %></label></fieldset>
-    <fieldset><legend>Recebimento</legend><label><%= radio_button_tag "order[fulfillment_method]", "pickup", @order.pickup?, data: { action: "checkout#toggleDelivery" } %> Retirada</label><label><%= radio_button_tag "order[fulfillment_method]", "delivery", @order.delivery?, data: { action: "checkout#toggleDelivery" } %> Entrega</label></fieldset>
-    <fieldset data-checkout-target="address" class="checkout-address <%= 'is-hidden' unless @order.delivery? %>"><legend>Endereço de entrega</legend><label>CEP <%= text_field_tag "customer[zip_code]", @customer.zip_code, inputmode: "numeric" %></label><label>Rua <%= text_field_tag "customer[street]", @customer.street %></label><label>Número <%= text_field_tag "customer[number]", @customer.number %></label><label>Bairro <%= text_field_tag "customer[neighborhood]", @customer.neighborhood %></label><label>Cidade <%= text_field_tag "customer[city]", @customer.city %></label><label>UF <%= text_field_tag "customer[state]", @customer.state, maxlength: 2 %></label><label>Complemento <%= text_field_tag "customer[complement]", @customer.complement %></label><label>Referência <%= text_field_tag "customer[reference]", @customer.reference %></label></fieldset>
-    <fieldset><legend>Pagamento</legend><label>Forma de pagamento <%= select_tag "order[payment_method]", options_for_select([["Pix", "pix"], ["Cartão", "card"], ["Dinheiro", "cash"], ["Cartão na entrega", "card_delivery"], ["Cartão na retirada", "card_pickup"], ["Transferência", "transfer"], ["Outro", "other"]], @order.payment_method) %></label><label>Troco para (somente dinheiro) <%= number_field_tag "order[change_for]", @order.change_for, min: 0, step: "0.01" %></label><label>Observações <%= text_area_tag "order[notes]", @order.notes %></label></fieldset><%= form.submit "Confirmar e abrir WhatsApp", class: "storefront-primary-action" %>
-  </div><aside class="order-summary checkout-summary"><h2>Resumo do pedido</h2><% @cart.items.each do |item| %><p><span><%= item.quantity %> × <%= item.name %></span><strong><%= format_brl(item.total) %></strong></p><% end %><p><span>Subtotal</span><strong><%= format_brl(@cart.subtotal) %></strong></p><p class="order-summary__total"><span>Total parcial</span><strong><%= format_brl(@cart.subtotal) %></strong></p><small>O valor do frete, se houver, será confirmado para entrega.</small></aside><% end %>
+
+<section class="order-checkout" data-controller="checkout" data-checkout-subtotal-value="<%= @cart.subtotal %>" data-checkout-fee-value="<%= StoreSetting.current.default_delivery_fee %>" aria-labelledby="checkout-titulo">
+  <header class="order-checkout__heading">
+    <%= link_to carrinho_path, class: "order-checkout__back" do %>
+      <%= checkout_icon(:back) %>
+      <span>Voltar ao carrinho</span>
+    <% end %>
+    <p class="storefront-kicker">Último passo</p>
+    <h1 id="checkout-titulo">Detalhes do pedido</h1>
+    <p>Preencha seus dados para conferir o valor e enviar o pedido pelo WhatsApp.</p>
+  </header>
+
+  <%= form_with url: finalizar_pedido_path, class: "order-checkout__form", data: { turbo: false, action: "submit->checkout#submit" } do |form| %>
+    <div class="order-checkout__fields">
+      <% if @order.errors.any? || @customer.errors.any? %>
+        <div class="form-errors" role="alert">
+          <strong>Revise os campos indicados:</strong>
+          <ul><% (@order.errors.full_messages + @customer.errors.full_messages).uniq.each do |message| %><li><%= message %></li><% end %></ul>
+        </div>
+      <% end %>
+
+      <section class="order-checkout__card" aria-labelledby="identificacao-titulo">
+        <div class="order-checkout__card-heading">
+          <%= checkout_icon(:person, class_name: "order-checkout__icon") %>
+          <div><h2 id="identificacao-titulo">Seus dados</h2><p>Para a loja identificar seu pedido.</p></div>
+        </div>
+        <div class="order-checkout__field-grid">
+          <label class="order-checkout__field order-checkout__field--wide">Nome
+            <%= text_field_tag "customer[name]", @customer.name, required: true, autocomplete: "name", placeholder: "Como podemos chamar você?" %>
+          </label>
+          <label class="order-checkout__field">WhatsApp
+            <%= telephone_field_tag "customer[phone]", @customer.phone, required: true, autocomplete: "tel", placeholder: "(00) 00000-0000", data: { action: "input->checkout#formatPhone" } %>
+          </label>
+          <label class="order-checkout__field">E-mail <span>(opcional)</span>
+            <%= email_field_tag "customer[email]", @customer.email, autocomplete: "email", placeholder: "voce@exemplo.com" %>
+          </label>
+        </div>
+      </section>
+
+      <section class="order-checkout__card" aria-labelledby="recebimento-titulo">
+        <div class="order-checkout__card-heading">
+          <%= checkout_icon(:truck, class_name: "order-checkout__icon") %>
+          <div><h2 id="recebimento-titulo">Como você quer receber?</h2><p>Escolha entrega ou retirada.</p></div>
+        </div>
+        <div class="order-checkout__choices">
+          <label class="order-checkout__choice">
+            <%= radio_button_tag "order[fulfillment_method]", "delivery", @order.delivery?, data: { action: "change->checkout#toggleDelivery" } %>
+            <%= checkout_icon(:truck) %>
+            <span><strong>Entrega</strong><small>O frete será calculado pelo bairro.</small></span>
+          </label>
+          <label class="order-checkout__choice">
+            <%= radio_button_tag "order[fulfillment_method]", "pickup", @order.pickup?, data: { action: "change->checkout#toggleDelivery" } %>
+            <%= checkout_icon(:store) %>
+            <span><strong>Retirada</strong><small>Sem taxa de entrega.</small></span>
+          </label>
+        </div>
+
+        <fieldset class="order-checkout__address" data-checkout-target="address">
+          <legend>Endereço de entrega</legend>
+          <p>Preencha o endereço para calcularmos a entrega.</p>
+          <div class="order-checkout__field-grid">
+            <label class="order-checkout__field">CEP
+              <%= text_field_tag "customer[zip_code]", @customer.zip_code, inputmode: "numeric", autocomplete: "postal-code", placeholder: "00000-000", data: { action: "blur->checkout#lookupPostalCode input->checkout#formatPostalCode" } %>
+            </label>
+            <label class="order-checkout__field order-checkout__field--wide">Rua
+              <%= text_field_tag "customer[street]", @customer.street, autocomplete: "street-address", placeholder: "Rua, avenida ou travessa" %>
+            </label>
+            <label class="order-checkout__field">Número
+              <%= text_field_tag "customer[number]", @customer.number, autocomplete: "address-line2", placeholder: "Número" %>
+            </label>
+            <label class="order-checkout__field">Bairro
+              <%= text_field_tag "customer[neighborhood]", @customer.neighborhood, autocomplete: "address-level3", placeholder: "Seu bairro", data: { action: "change->checkout#quote" } %>
+            </label>
+            <label class="order-checkout__field">Cidade
+              <%= text_field_tag "customer[city]", @customer.city, autocomplete: "address-level2", placeholder: "Sua cidade" %>
+            </label>
+            <label class="order-checkout__field">UF
+              <%= text_field_tag "customer[state]", @customer.state, autocomplete: "address-level1", maxlength: 2, placeholder: "UF" %>
+            </label>
+            <label class="order-checkout__field">Complemento <span>(opcional)</span>
+              <%= text_field_tag "customer[complement]", @customer.complement, autocomplete: "address-line2", placeholder: "Casa, bloco, apto..." %>
+            </label>
+            <label class="order-checkout__field">Referência <span>(opcional)</span>
+              <%= text_field_tag "customer[reference]", @customer.reference, placeholder: "Ponto de referência" %>
+            </label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section class="order-checkout__card" aria-labelledby="pagamento-titulo">
+        <div class="order-checkout__card-heading">
+          <%= checkout_icon(:payment, class_name: "order-checkout__icon") %>
+          <div><h2 id="pagamento-titulo">Pagamento</h2><p>O pagamento é combinado com a loja.</p></div>
+        </div>
+        <div class="order-checkout__field-grid">
+          <label class="order-checkout__field order-checkout__field--wide">Forma de pagamento
+            <%= select_tag "order[payment_method]", options_for_select([["Pix", "pix"], ["Cartão", "card"], ["Dinheiro", "cash"], ["Cartão na entrega", "card_delivery"], ["Cartão na retirada", "card_pickup"], ["Transferência", "transfer"], ["Outro", "other"]], @order.payment_method) %>
+          </label>
+          <label class="order-checkout__field">Troco para <span>(somente dinheiro)</span>
+            <%= number_field_tag "order[change_for]", @order.change_for, min: 0, step: "0.01", inputmode: "decimal", placeholder: "R$ 0,00" %>
+          </label>
+        </div>
+      </section>
+
+      <section class="order-checkout__card" aria-labelledby="observacoes-titulo">
+        <div class="order-checkout__card-heading">
+          <%= checkout_icon(:heart, class_name: "order-checkout__icon") %>
+          <div><h2 id="observacoes-titulo">Observações</h2><p>Conte algo importante sobre o preparo ou a entrega.</p></div>
+        </div>
+        <label class="order-checkout__field">Observações do pedido <span>(opcional)</span>
+          <%= text_area_tag "order[notes]", @order.notes, rows: 3, placeholder: "Ex.: alguma restrição ou referência para entrega" %>
+        </label>
+      </section>
+    </div>
+
+    <aside class="order-checkout__summary" aria-labelledby="resumo-titulo">
+      <div class="order-checkout__summary-heading">
+        <div><%= checkout_icon(:receipt, class_name: "order-checkout__icon") %><div><h2 id="resumo-titulo">Resumo do pedido</h2><p><%= pluralize(@cart.quantity, "item") %> no carrinho</p></div></div>
+        <%= link_to carrinho_path, class: "order-checkout__edit" do %><span>Editar</span><%= checkout_icon(:edit) %><% end %>
+      </div>
+      <div class="order-checkout__items">
+        <% @cart.items.each do |item| %>
+          <article class="order-checkout__item">
+            <% if item.product.main_image_attached? %>
+              <%= image_tag item.product.main_image, alt: "", class: "order-checkout__item-image" %>
+            <% else %>
+              <%= checkout_icon(:product, class_name: "order-checkout__item-placeholder") %>
+            <% end %>
+            <div><h3><%= item.name %></h3><p><%= item.quantity %> × <%= format_brl(item.unit_price) %></p></div>
+            <strong><%= format_brl(item.total) %></strong>
+          </article>
+        <% end %>
+      </div>
+      <div class="order-checkout__totals">
+        <p><span>Subtotal</span><strong><%= format_brl(@cart.subtotal) %></strong></p>
+        <p><span>Frete estimado</span><strong data-checkout-target="fee"></strong></p>
+        <p class="order-checkout__total"><span>Total estimado<small>O servidor confirma o valor ao registrar.</small></span><strong data-checkout-target="total"><%= format_brl(@cart.subtotal) %></strong></p>
+      </div>
+      <p class="order-checkout__minimum">Pedido mínimo: <strong><%= format_brl(StoreSetting.current.effective_minimum_order_value) %></strong>, antes do frete.</p>
+      <p class="order-checkout__message" role="status" data-checkout-target="message"></p>
+      <div class="order-checkout__whatsapp-note"><%= checkout_icon(:message) %><p>Ao confirmar, a conversa do WhatsApp abrirá com a mensagem do pedido preenchida. Envie a mensagem para a loja.</p></div>
+      <%= form.submit "Confirmar e abrir WhatsApp", class: "order-checkout__submit", data: { checkout_target: "submit" } %>
+    </aside>
+  <% end %>
 </section>

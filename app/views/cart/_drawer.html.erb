@@ -1,0 +1,42 @@
+<% if current_cart.empty? %>
+  <div class="cart-drawer__empty">
+    <span class="cart-drawer__empty-icon"><%= navigation_icon(:cart) %></span>
+    <h3>Seu carrinho está vazio</h3>
+    <p>Escolha um sabor no cardápio para começar seu pedido.</p>
+    <%= link_to "Ver cardápio", produtos_path, class: "cart-drawer__browse", data: { action: "click->cart-drawer#close" } %>
+  </div>
+<% else %>
+  <div class="cart-drawer__content">
+    <p class="cart-drawer__item-count"><%= pluralize(current_cart.quantity, "item") %> no carrinho</p>
+    <div class="cart-drawer__items">
+      <% current_cart.items.each do |item| %>
+        <article class="cart-drawer__item">
+          <% if item.product.main_image_attached? %>
+            <%= image_tag item.product.main_image, alt: "", class: "cart-drawer__item-image" %>
+          <% else %>
+            <span class="cart-drawer__item-placeholder"><%= navigation_icon(:cart) %></span>
+          <% end %>
+          <div class="cart-drawer__item-details">
+            <h3><%= item.name %></h3>
+            <p><%= format_brl(item.unit_price) %> por unidade</p>
+            <div class="cart-drawer__item-actions">
+              <%= form_with url: cart_item_path(item.key), method: :patch, class: "cart-drawer__update" do |form| %>
+                <%= number_field_tag "cart_item[quantity]", item.quantity, min: 0, max: 99, aria: { label: "Quantidade de #{item.name}" }, data: { action: "change->cart-drawer#updateQuantity" } %>
+                <%= form.submit "Atualizar", class: "visually-hidden" %>
+              <% end %>
+              <%= button_to cart_item_path(item.key), method: :delete, class: "cart-drawer__remove", aria: { label: "Remover #{item.name} do carrinho" }, title: "Remover item" do %><%= navigation_icon(:trash) %><% end %>
+            </div>
+          </div>
+          <strong class="cart-drawer__item-total"><%= format_brl(item.total) %></strong>
+        </article>
+      <% end %>
+    </div>
+    <footer class="cart-drawer__footer">
+      <p class="cart-drawer__total"><span>Total parcial</span><strong><%= format_brl(current_cart.subtotal) %></strong></p>
+      <p class="cart-drawer__delivery-note">O frete é calculado no checkout quando você escolher entrega.</p>
+      <div class="cart-drawer__actions">
+        <%= link_to "Finalizar pedido", finalizar_pedido_path, class: "storefront-primary-action", data: { action: "click->cart-drawer#close" } %>
+      </div>
+    </footer>
+  </div>
+<% end %>

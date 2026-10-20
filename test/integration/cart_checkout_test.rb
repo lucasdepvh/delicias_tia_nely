@@ -13,12 +13,19 @@ class CartCheckoutTest < ActionDispatch::IntegrationTest
 
     get finalizar_pedido_path
     assert_response :success
+    assert_select ".order-checkout"
+    assert_select "h1", "Detalhes do pedido"
+    assert_select "form[data-turbo='false'] input[name='customer[name]']"
+    assert_select "form[data-turbo='false'] input[name='order[fulfillment_method]'][value='delivery']"
+    assert_select ".order-checkout__summary"
+    assert_select ".order-checkout svg.checkout-icon", minimum: 10
+    assert_select ".order-checkout", text: /local_shipping/, count: 0
 
     assert_difference [ "Order.count", "OrderItem.count", "FinancialEntry.count" ], 1 do
       post finalizar_pedido_path, params: { customer: { name: "Ana", phone: "(11) 99999-9999" }, order: { fulfillment_method: "pickup", payment_method: "pix", notes: "Sem açúcar" } }
     end
-    assert_response :redirect
-    assert_match %r{https://wa\.me/5511999999999}, response.location
+    assert_response :see_other
+    assert_match %r{\Ahttps://wa\.me/5511999999999\?text=}, response.location
     order = Order.last
     assert_equal "pending", order.status
     assert_equal BigDecimal("25"), order.total

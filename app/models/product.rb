@@ -17,9 +17,12 @@ class Product < ApplicationRecord
   scope :active, -> { where(active: true) }
 
   def available?
-    active? && (!track_inventory? || quantity.positive? || product_variants.where(active: true).where("quantity > 0").exists?)
-  end
+    return false unless active?
+    return true if track_inventory? && quantity.positive?
+    return product_variants.active.any?(&:available?) if product_variants.active.exists?
 
+    !track_inventory?
+  end
   def main_image_attached?
     main_image.attached?
   end

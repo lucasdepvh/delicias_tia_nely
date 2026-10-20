@@ -1,5 +1,8 @@
 pt-BR:
   hello: "Olá"
+  time:
+    formats:
+      short: "%d/%m/%Y %H:%M"
   activerecord:
     attributes:
       admin:

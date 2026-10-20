@@ -1,5 +1,61 @@
 # Implementação
 
+## Tela de finalização do pedido — 19/10/2026
+
+- A tela pública `/finalizar-pedido` foi redesenhada a partir da estrutura visual recebida: etapas do pedido, cartões de identificação, recebimento, endereço, pagamento, observações e resumo detalhado.
+- Os controles são ligados aos campos e cálculos existentes. Entrega e retirada permanecem condicionadas à escolha do cliente; o CEP continua preenchendo endereço e o frete é consultado pelo bairro. Produtos sem imagem mostram apenas um ícone neutro, sem reutilizar imagens externas ou dados fictícios da referência.
+- O resumo usa itens, quantidades, preços e total do carrinho no servidor. A confirmação ainda registra o pedido e conduz à página autorizada que oferece o envio pelo WhatsApp; não há cobrança, desconto, prazo, endereço, brinde ou confirmação comercial inventados.
+- Evidências: `bundle exec rails test test/integration/cart_checkout_test.rb test/integration/checkout_rules_test.rb` aprovado com **20 testes, 155 asserções, zero falhas ou erros**. A suíte integral e a verificação de carregamento foram executadas ao final desta etapa.
+- Correção posterior: os ícones desta tela deixaram de depender da fonte remota Material Symbols, que podia falhar e exibir nomes técnicos na interface. Foram substituídos por SVGs locais, e o topo ganhou espaçamento suficiente para não ficar sob o cabeçalho fixado. A verificação cobre a presença dos SVGs e a ausência dos nomes técnicos.
+- Ajuste visual posterior: o checkout deixou de usar rosa como superfície dominante. A área de trabalho passou a usar marfim e areia suaves; cartões, controles e totais usam branco quente e bordas neutras. Terracota e verde continuam restritos aos elementos de ação e estado.
+- Navegação pública: removido o atalho “Contato” do cabeçalho. Carrinho e Administração agora usam ícones SVG locais de carrinho e acesso administrativo, com texto e rótulos acessíveis preservados; o contador de itens continua atualizado pelo Turbo.
+- Drawer do carrinho: ganhou cabeçalho próprio, miniatura ou ícone do produto, quantidade e remoção agrupadas por item, orientação sobre frete e rodapé fixado com total, revisão e finalização. As mesmas ações continuam usando os endpoints existentes.
+- Interação do drawer: alterar a quantidade pelo campo ou pelas setas envia a atualização automaticamente por Turbo. O texto de atualização foi removido da interface; remoção passou a usar um botão de lixeira com rótulo acessível.
+- Cabeçalho e rodapé: o carrinho passou a ser um botão flutuante com contador, mantendo a abertura do drawer. O rodapé foi reorganizado em formato centralizado, com links públicos e administrativos e crédito para Lucas Martins, direcionado ao portfólio informado pelo proprietário.
+- Finalização: após validar e gravar o pedido, o checkout agora responde diretamente com redirecionamento 303 para o WhatsApp oficial, levando a mensagem do pedido já preenchida. O resumo autorizado permanece acessível pelo último pedido no carrinho para consulta ou reenvio posterior.
+
+## Revisão do caminho carrinho → pedido → WhatsApp — 19/10/2026
+
+- Após confirmar o checkout, a aplicação responde com 303 para o resumo `/pedidos/:number` autorizado pela sessão. A página apresenta o pedido persistido e um botão “Enviar pedido pelo WhatsApp”; a mensagem codificada usa os itens e valores gravados, permitindo conferir e reabrir o link enquanto a sessão tiver acesso. O texto explica que registrar e abrir o link não envia a mensagem automaticamente.
+- Produtos com variações ativas e sem estoque disponível deixam de parecer compráveis quando não há saldo próprio para venda direta. O servidor rejeita a tentativa de adicionar o produto sem uma variação válida. Foi preservada a compra direta já documentada quando o produto controla estoque e tem saldo próprio positivo.
+- A suíte Minitest foi atualizada para percorrer o redirecionamento ao resumo, localizar o botão e decodificar a mensagem WhatsApp. Há teste adicional para variação esgotada. Evidências: `bundle exec rails test` com **41 testes, 282 asserções, zero falhas ou erros**; `bundle exec rails zeitwerk:check` e `git diff --check` aprovados.
+- O recebimento continua condicionado a WhatsApp oficial válido e `accepting_orders` ativo. Cupons, promoções/brindes e configurações administrativas seguem pendentes; não foram apresentados como operacionais. Não houve envio real de mensagem nem validação manual da abertura do aplicativo ou deploy.
+
+## Confirmação de carrinho e acesso à finalização — 15/10/2026
+
+- Ao adicionar um produto via Turbo, a vitrine agora mostra uma confirmação visual persistente, com mensagem clara e atalho para revisar o carrinho. O drawer permanece fechado nesse momento, conforme a seção 9 da especificação, evitando interromper a escolha de outros produtos.
+- O drawer passou a oferecer as duas próximas ações: “Ver carrinho” para revisão completa e “Finalizar pedido”, que abre a tela própria `/finalizar-pedido`. A mesma ação de finalização já permanece disponível no resumo da página do carrinho.
+- Adicionado teste de integração para assegurar que a resposta Turbo atualiza contador, conteúdo do drawer, confirmação com link e não tenta abrir/substituir o drawer.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/checkout_rules_test.rb` aprovado com **17 testes, 117 asserções, nenhuma falha ou erro**; `zeitwerk:check` e `git diff --check` também aprovados.
+
+
+## Opções de produto indisponíveis — 15/10/2026
+
+- Quando o produto controla seu próprio estoque e tem saldo positivo, ele pode ser comprado diretamente, mesmo que existam variações antigas sem saldo. Assim, a quantidade cadastrada no produto continua sendo respeitada.
+- A tela lista apenas opções compráveis; se nenhuma estiver disponível, ela não mostra o seletor vazio. Nessa situação, com saldo próprio positivo, exibe a compra direta; sem saldo, informa que o produto está indisponível.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/product_catalog_test.rb test/integration/checkout_rules_test.rb` aprovado com **23 testes, 158 asserções, nenhuma falha ou erro**; `zeitwerk:check` e `git diff --check` também aprovados.
+
+## Carrinho e finalização para WhatsApp — 15/10/2026
+
+- Seções 8–9, 12–13 e 22: concluído o fluxo básico de compra sobre a implementação inicial. O carrinho rejeita quantidades inválidas e soma acima de 99; atualizar ajusta ao estoque/teto, remove itens indisponíveis e informa o ajuste. Respostas Turbo atualizam contador, conteúdo do drawer, página e feedback sem substituir o drawer aberto; HTML permanece funcional.
+- O POST revalida produto/variação, quantidade e estoque, mínimo antes de frete (inclusive retirada), telefone, modalidade, pagamento, endereço, CEP e troco. Valores e status enviados pelo navegador não controlam os cálculos. Não há baixa de estoque no checkout.
+- Cliente normalizado, pedido pendente, itens com snapshots de nome/preço e receita pendente são persistidos na mesma transação. Falhas preservam formulário e carrinho; sucesso limpa o carrinho e responde com redirecionamento 303 para o WhatsApp configurado.
+- Entrega procura área ativa pelo bairro normalizado, com fallback para a taxa padrão informada no formulário. Retirada tem frete zero. Consulta de CEP pelo backend utiliza HTTPS/ViaCEP e timeouts de 3 segundos, permite preenchimento manual; a estimativa de frete usa endpoint próprio e é recalculada ao finalizar.
+- Mensagem inclui itens, totais, modalidade, pagamento traduzido, troco, endereço e observações. Resumo em `/pedidos/:number` exige a sessão que criou o pedido, com cabeçalhos de privacidade. O carrinho oferece acesso ao último pedido; detalhe administrativo também permite reabrir a mensagem.
+- O formulário desativa Turbo e bloqueia repetição do envio enquanto navega. Isso não oferece idempotência entre múltiplas abas/requisições; continua pendente uma garantia persistente de idempotência.
+- Evidências: testes direcionados `checkout_rules_test.rb`, `cart_checkout_test.rb` e `store_setting_test.rb`: **21 testes, 137 asserções, zero falhas/erros**. Cobrem redirecionamento/codificação, estoque alterado, produto inativo, variação, mínimo, pausa após GET, dados inválidos, fraude de totais, fallback/área, rollback financeiro, privacidade e Turbo. Suíte completa: **30 testes, 177 asserções, duas falhas visuais preexistentes em FoundationAccessTest, zero erros**.
+- Configuração local atualizada com o WhatsApp informado pelo proprietário, normalizado com DDI brasileiro. Dados comerciais mínimos válidos e recebimento ativado localmente para validar o fluxo de carrinho/checkout. O número foi armazenado somente no banco de desenvolvimento, sem inclusão no código ou nesta documentação.
+- Pendências fora deste fluxo básico: cupons e promoções/brindes (seções 10–11, incluindo integração ao carrinho e checkout), CRUD de áreas/configurações, ciclo administrativo de estoque/status e financeiro, snapshot próprio de identificação do cliente para reenvios históricos, validação de navegador e abertura manual do aplicativo WhatsApp. A consulta real ao ViaCEP não foi exercitada nesta etapa. Nenhuma mensagem foi enviada e nenhuma configuração de produção foi modificada.
+- O cardápio exibe, em cada produto, “Detalhes” e uma ação de compra: produtos sem variação usam “Adicionar” com quantidade inicial de uma unidade; produtos com opções ativas usam “Comprar”, levando à escolha obrigatória da opção antes de adicionar. Quando o recebimento está pausado ou o item está indisponível, a ação correspondente permanece visível e desabilitada com a explicação apropriada.
+- Evidência complementar: `product_catalog_test.rb` e `checkout_rules_test.rb` passaram com **21 testes, 141 asserções, zero falhas/erros**.
+
+## Status de pedidos e estoque — 15/10/2026
+
+- Seções 14–15: o painel administrativo agora permite atualizar o status de pedidos autenticados. Ao entrar pela primeira vez em confirmado, em preparo, pronto, saiu para entrega ou entregue, o pedido baixa os saldos necessários em uma transação e cria movimentos auditáveis. O checkout continua sem baixar estoque.
+- Para produtos controlados, a baixa verifica atividade e saldo antes de alterar qualquer registro; itens repetidos são agregados. Variações baixam apenas o próprio saldo. Uma tentativa sem saldo suficiente ou com produto inativo não altera status, estoque, movimentos nem receita.
+- Cancelar um pedido com baixa restaura os saldos uma vez e registra o movimento; confirmar novamente depois de cancelado baixa novamente. Voltar para pendente não restaura saldo, conforme a regra definida. A receita automática permanece pendente nos status em aberto, é marcada paga na entrega e cancelada quando o pedido é cancelado.
+- Evidências: `order_stock_test.rb` e `admin_order_status_test.rb` cobrem produto, variação, agregação, saldo insuficiente, inativação, cancelamento, reativação, entrega, receita e autorização administrativa. A execução conjunta com os testes de carrinho/checkout teve **28 testes, 192 asserções, zero falhas/erros**. As duas expectativas visuais antigas de `FoundationAccessTest` foram alinhadas à home de cardápio e ao painel administrativo atuais. Suíte completa: **37 testes, 240 asserções, zero falhas/erros**. `zeitwerk:check` também foi aprovado.
+
 ## Carrinho e checkout próprio — 14/10/2026
 
 - Implementados carrinho persistido em sessão e rotas públicas para adicionar, alterar quantidade, remover, esvaziar e visualizar itens. Produto e variação são revalidados no servidor a cada operação; quantidade é limitada a 99 e respeita estoque quando aplicável.
@@ -8,7 +64,18 @@
 - Ao confirmar, o sistema normaliza/atualiza o cliente por telefone, cria pedido pendente, itens com snapshot de preço e receita automática pendente em uma transação, limpa o carrinho e redireciona para o WhatsApp oficial configurado com a mensagem detalhada codificada. Não há iFood, gateway ou envio automático de mensagem.
 - Evidências: `RAILS_ENV=test ... bin/rails db:migrate` aplicado somente no banco de teste; `RAILS_ENV=test ... bin/rails test test/integration/cart_checkout_test.rb` aprovado com **2 testes, 20 asserções, nenhuma falha ou erro**. `zeitwerk:check` aprovado. A suíte completa ainda tem duas falhas preexistentes em `FoundationAccessTest`, cujas expectativas de texto/layout não correspondem às telas atuais; o fluxo novo passou isoladamente.
 
-Escopo desta entrega: fundação e catálogo público inicial. O prompt de continuação está reservado para a próxima etapa. Especificação original preservada, SHA-256 `50fb8dcb81202deb71b5a44d23c8fd089cbe2996034b9d503cf085d08c1ef9c2`.
+## Correção do layout de autenticação — 15/10/2026
+
+- `current_cart` passou a ser fornecido por `ApplicationController`. As telas Devise de iniciar sessão e recuperação de senha usam o layout público, mas não herdam de `PublicController`; centralizar o helper preserva o carrinho na sessão e impede erro de renderização no cabeçalho/drawer.
+- Adicionado teste de integração para `GET /iniciar-sessao`, verificando a renderização do contador de carrinho vazio. Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/foundation_access_test.rb:22` aprovado com **1 teste, 3 asserções, nenhuma falha ou erro**; `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails zeitwerk:check` aprovado. A execução integral de `foundation_access_test.rb` ainda tem duas falhas preexistentes de expectativas visuais desatualizadas (título da home e seletor do dashboard), sem relação com esta correção.
+
+## Acesso temporário de demonstração — 15/10/2026
+
+- O ambiente de desenvolvimento aceita hosts adicionais somente quando informados em `RAILS_ALLOWED_HOSTS`, separados por vírgula. A proteção contra hosts não autorizados permanece ativa por padrão; a variável serve para túneis temporários de demonstração, sem alteração de produção ou DNS permanente.
+- Ao iniciar uma demonstração com `SHARE_DEMO=1`, as páginas de erro detalhadas de desenvolvimento ficam desativadas. Esse modo não substitui uma implantação de produção, mas evita revelar traces ao visitante do túnel temporário.
+- Evidência: o Quick Tunnel ativo foi verificado externamente com resposta HTTP `200` para a rota `/`. O endereço expira quando o processo do túnel ou o computador for interrompido; nenhum domínio, DNS permanente ou serviço de produção foi configurado.
+
+Estado atual: fundação, catálogo e fluxo básico de carrinho/checkout implementados; as limitações mais recentes estão registradas na entrada de 19/10/2026. Os registros abaixo preservam o histórico de cada etapa. Especificação original preservada, SHA-256 `50fb8dcb81202deb71b5a44d23c8fd089cbe2996034b9d503cf085d08c1ef9c2`.
 
 ## Matriz da especificação
 
@@ -20,11 +87,11 @@ Escopo desta entrega: fundação e catálogo público inicial. O prompt de conti
 | 6 | Admin, StoreSetting, Active Storage e migrations | Demais models, relações e índices junto aos módulos |
 | 7 | Catálogo público de produtos e categorias, detalhes, disponibilidade e variações disponíveis; infraestrutura de upload | Kits, imagens cadastráveis, busca e paginação completa |
 | 8 | Configuração única, valores decimais, padrão pausado | CRUD administrativo e bloqueios nos futuros endpoints de compra |
-| 9 | Estrutura de views reservada | Carrinho e suas validações HTML/Turbo |
+| 9 | Cart, CartController, parciais HTML/Turbo e CheckoutRulesTest | Integração com cupons e brindes |
 | 10–11 | Sem promoção ou cupom anunciado como disponível | Cupons, combos, brindes e concorrência |
-| 12–13 | Sem checkout ou envio automático | Checkout, ViaCEP, link WhatsApp, privacidade e reenvio |
-| 14 | Sem operação de estoque simulada | Pedidos, movimentos, locks, restauração e exclusão auditável |
-| 15 | Módulo indicado como pendente | Financeiro comercial, sincronização e vendas manuais |
+| 12–13 | CheckoutController, OrdersController, PostalCodesController, OrdersHelper e testes de integração | Cupons/promoções, idempotência persistente, verificação de navegador/ViaCEP real/WhatsApp |
+| 14 | Alteração administrativa de status, movimentos de venda/restauração e baixa transacional | Ajustes manuais, concorrência em produção, exclusão auditável e brindes pendentes |
+| 15 | Receita automática pendente/paga/cancelada sincronizada com status do pedido | Financeiro comercial completo e vendas manuais |
 | 16–17 | Módulos indicados como pendentes | Financeiro pessoal, dashboard real e análise de vendas |
 | 18–19 | Layouts responsivos, login, navegação, estados vazios, DESIGN.md | CRUDs, filtros, paginação, componentes e QA dos fluxos |
 | 20 | Helpers SEO/moeda/marca, metadados públicos e noindex privado | SEO de categorias/produtos e imagens reais |
@@ -42,7 +109,7 @@ Escopo desta entrega: fundação e catálogo público inicial. O prompt de conti
 6. Financeiro pessoal e análise de vendas.
 7. SEO completo, testes de concorrência, navegador e operação.
 
-A fundação não habilita vendas, mesmo com dados comerciais preenchidos. A ativação depende do módulo de checkout verificado. Não há integração iFood nem dependência de fila para reproduzi-la.
+O recebimento de pedidos está ativado na configuração local com dados comerciais válidos. O fluxo básico de checkout está verificado pelos testes acima. Não há integração iFood nem dependência de fila para reproduzi-la.
 
 ## Verificações
 

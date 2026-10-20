@@ -1,0 +1,13 @@
+<div class="order-summary">
+  <% order.order_items.each do |item| %>
+    <p><span><%= item.quantity %> × <%= item.product_name %></span><strong><%= format_brl(item.total) %></strong></p>
+  <% end %>
+  <p>Subtotal: <%= format_brl(order.subtotal) %></p>
+  <p>Frete: <%= format_brl(order.delivery_fee) %></p>
+  <p>Total: <strong><%= format_brl(order.total) %></strong></p>
+  <p><%= order.delivery? ? "Entrega" : "Retirada" %> · <%= order.payment_label %></p>
+  <% if order.delivery? %><p><%= order.delivery_address %></p><% end %>
+  <% if (url = whatsapp_url_for(order)) %>
+    <%= link_to "Enviar pedido pelo WhatsApp", url, class: "storefront-primary-action", data: { turbo: false } %>
+  <% end %>
+</div>

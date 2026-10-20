@@ -19,6 +19,9 @@ Rails.application.routes.draw do
   delete "/carrinho", to: "cart#clear"
   get "/finalizar-pedido", to: "checkout#new", as: :finalizar_pedido
   post "/finalizar-pedido", to: "checkout#create"
+  get "/pedidos/:number", to: "orders#show", as: :pedido
+  get "/cep/:zip_code", to: "postal_codes#show", as: :cep
+  get "/finalizar-pedido/frete", to: "checkout#delivery_quote", as: :checkout_delivery_quote
   get "/health", to: "health#show", defaults: { format: :json }
   get "/up", to: "health#show", defaults: { format: :json }
 
@@ -27,7 +30,7 @@ Rails.application.routes.draw do
     post "pedidos/alternar-recebimento", to: "dashboard#toggle_orders", as: :toggle_orders
     resources :categories
     resources :products
-    resources :orders, only: %i[index show]
+    resources :orders, only: %i[index show update]
     resources :customers, except: :new
     resources :financial_entries, path: "financeiro"
   end

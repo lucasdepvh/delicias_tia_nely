@@ -22,7 +22,7 @@ class StoreSetting < ApplicationRecord
   end
 
   def commercial_details_ready?
-    store_name.present? && whatsapp_number.present?
+    store_name.present? && whatsapp_number.to_s.gsub(/\D/, "").match?(/\A[1-9]\d{9,14}\z/)
   end
 
   def accepting_orders?

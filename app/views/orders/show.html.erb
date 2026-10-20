@@ -1,0 +1,6 @@
+<% content_for :title, "Pedido #{@order.number}" %>
+<section class="commerce-page">
+  <h1>Pedido <%= @order.number %></h1>
+  <p><%= @order.status_label %>. Pedido registrado. Confira o resumo e toque no botão abaixo para enviar a mensagem pelo WhatsApp. O pedido só chega à loja quando você enviar a mensagem no aplicativo.</p>
+  <%= render "orders/summary", order: @order %>
+</section>

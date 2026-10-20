@@ -1,0 +1,17 @@
+<% content_for :title, @product.name %>
+<% content_for :description, @product.description.presence || "Conheça #{@product.name}, um sabor da #{brand_name}." %>
+<article class="product-detail" aria-labelledby="produto-titulo">
+  <%= link_to "← Voltar aos produtos", produtos_path, class: "product-detail__back" %>
+  <div class="product-detail__visual"><% if @product.main_image_attached? %><%= image_tag @product.main_image, alt: "Imagem de #{@product.name}" %><% else %><span aria-hidden="true"><%= @product.name.first.upcase %></span><% end %></div>
+  <div class="product-detail__content"><p class="storefront-kicker"><%= @product.category.name %></p><h1 id="produto-titulo"><%= @product.name %></h1><p class="product-detail__price"><%= format_brl(@product.price) %></p><p class="product-detail__availability <%= "product-detail__availability--unavailable" unless @product.available? %>"><%= @product.available? ? "Disponível no cardápio" : "Indisponível no momento" %></p>
+    <% if @product.description.present? %><div class="product-detail__description"><h2>Sobre este sabor</h2><%= simple_format(@product.description) %></div><% end %>
+    <% if @store_setting.accepting_orders? && @product.available? %>
+      <%= form_with url: cart_items_path, scope: :cart_item, class: "product-purchase" do |form| %><%= form.hidden_field :product_id, value: @product.id %>
+        <% if @active_variants.any? %><fieldset class="product-detail__variants"><legend>Escolha uma opção</legend><% @active_variants.each do |variant| %><% next unless variant.available? %><label><%= form.radio_button :variant_id, variant.id, required: true %> <span><%= variant.name %></span> <strong><%= format_brl(variant.effective_price) %></strong></label><% end %></fieldset><% end %>
+        <label class="product-purchase__quantity">Quantidade <%= form.number_field :quantity, value: 1, min: 1, max: 99 %></label><%= form.submit "Adicionar ao carrinho", class: "storefront-primary-action" %>
+      <% end %>
+    <% elsif !@store_setting.accepting_orders? %><p class="product-detail__notice"><%= @store_setting.pause_message.presence || StoreSetting::DEFAULT_PAUSE_MESSAGE %></p><% end %>
+    <%= link_to "Ver todos os produtos", produtos_path, class: "storefront-secondary-action" %>
+  </div>
+  <% if @related_products.any? %><section class="product-detail__related" aria-labelledby="relacionados-titulo"><h2 id="relacionados-titulo">Você também pode gostar</h2><%= render "grid", products: @related_products %></section><% end %>
+</article>

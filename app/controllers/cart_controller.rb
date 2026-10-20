@@ -8,31 +8,45 @@ class CartController < PublicController
   def create
     product = Product.active.find_by!(id: cart_params[:product_id])
     current_cart.add(product: product, variant_id: cart_params[:variant_id], quantity: cart_params[:quantity])
-    redirect_back fallback_location: produto_path(product.slug), notice: "Produto adicionado ao carrinho."
+    respond_cart("Produto adicionado ao carrinho.", produto_path(product.slug), added: true)
   rescue ActiveRecord::RecordNotFound
-    redirect_to produtos_path, alert: "Produto não encontrado ou indisponível."
+    respond_cart("Produto não encontrado ou indisponível.", produtos_path, error: true)
   rescue ArgumentError => e
-    redirect_back fallback_location: produtos_path, alert: e.message
+    respond_cart(e.message, produtos_path, error: true)
   end
 
   def update
-    current_cart.update(params[:key], cart_params[:quantity])
-    redirect_to carrinho_path, notice: "Carrinho atualizado."
+    message = current_cart.update(params[:key], cart_params[:quantity])
+    respond_cart(message.is_a?(String) ? message : "Carrinho atualizado.", carrinho_path)
   rescue ArgumentError => e
-    redirect_to carrinho_path, alert: e.message
+    respond_cart(e.message, carrinho_path, error: true)
   end
 
   def destroy
     current_cart.remove(params[:key])
-    redirect_to carrinho_path, notice: "Item removido do carrinho."
+    respond_cart("Item removido do carrinho.", carrinho_path)
   end
 
   def clear
     current_cart.clear
-    redirect_to carrinho_path, notice: "Carrinho esvaziado."
+    respond_cart("Carrinho esvaziado.", carrinho_path)
   end
 
   private
+
+  def respond_cart(message, destination, error: false, added: false)
+    respond_to do |format|
+      format.html { redirect_to destination, status: :see_other, flash: { error ? :alert : :notice => message } }
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.update("cart-count", current_cart.quantity.to_s),
+          turbo_stream.update("cart-feedback", partial: "cart/feedback", locals: { message: message, error: error, added: added }),
+          turbo_stream.update("cart-drawer-content", partial: "cart/drawer"),
+          turbo_stream.update("cart-page", partial: "cart/content", locals: { cart: current_cart })
+        ]
+      end
+    end
+  end
 
   def cart_params
     params.require(:cart_item).permit(:product_id, :variant_id, :quantity)

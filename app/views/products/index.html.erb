@@ -17,5 +17,6 @@
     </nav>
   <% end %>
 
-  <%= render "grid", products: @products %>
+  <% unless @store_setting.accepting_orders? %><p id="store-paused-message" class="product-detail__notice"><%= @store_setting.pause_message.presence || StoreSetting::DEFAULT_PAUSE_MESSAGE %></p><% end %>
+  <%= render "grid", products: @products, store_setting: @store_setting %>
 </section>

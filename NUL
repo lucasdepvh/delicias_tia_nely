@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/assets/Logo Principal-a3ac4eac.png" type="image/png">
+    <link rel="apple-touch-icon" href="/assets/Logo Principal-a3ac4eac.png">
+    <title>Produtos | Delícias da Tia Nely</title>
+    <meta name="description" content="Conheça os sabores disponíveis da Delícias da Tia Nely.">
+    <link rel="canonical" href="https://every-foundation-pregnant-voice.trycloudflare.com/produtos">
+    <meta property="og:site_name" content="Delícias da Tia Nely">
+    <meta property="og:title" content="Produtos | Delícias da Tia Nely">
+    <meta property="og:description" content="Conheça os sabores disponíveis da Delícias da Tia Nely.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="i_UUEGxS-Lotkz2yLCkOxrGA6WvkcQ1TWvZfgZm3ugQsWQVjFU4M-uzr3sVx3rK04_N-nkHVOwUmtb8AO89Tbw" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/style-e7acf1b9.css" data-turbo-track="reload" />
+    <script type="importmap" data-turbo-track="reload">{
+  "imports": {
+    "application": "/assets/application-09caced1.js",
+    "@hotwired/turbo-rails": "/assets/turbo.min-86bf8853.js",
+    "@hotwired/stimulus": "/assets/stimulus.min-7ea3d58b.js",
+    "@hotwired/stimulus-loading": "/assets/stimulus-loading-25917588.js",
+    "controllers/application": "/assets/controllers/application-3e850f13.js",
+    "controllers/cart_drawer_controller": "/assets/controllers/cart_drawer_controller-1185ec2a.js",
+    "controllers/checkout_controller": "/assets/controllers/checkout_controller-4a764e0b.js",
+    "controllers": "/assets/controllers/index-4458403e.js"
+  }
+}</script>
+<link rel="modulepreload" href="/assets/application-09caced1.js">
+<link rel="modulepreload" href="/assets/turbo.min-86bf8853.js">
+<link rel="modulepreload" href="/assets/stimulus.min-7ea3d58b.js">
+<link rel="modulepreload" href="/assets/stimulus-loading-25917588.js">
+<link rel="modulepreload" href="/assets/controllers/application-3e850f13.js">
+<link rel="modulepreload" href="/assets/controllers/cart_drawer_controller-1185ec2a.js">
+<link rel="modulepreload" href="/assets/controllers/checkout_controller-4a764e0b.js">
+<link rel="modulepreload" href="/assets/controllers/index-4458403e.js">
+<script type="module">import "application"</script>
+  </head>
+  <body class="storefront-body" data-controller="cart-drawer">
+    <header class="storefront-header">
+      <div class="storefront-header__inner">
+        <a class="storefront-brand" aria-label="Página inicial de Delícias da Tia Nely" href="/">
+          <img class="storefront-brand__mark" alt="Logo Delícias da Tia Nely" src="/assets/Logo Principal-a3ac4eac.png" />
+          <span><strong>Delícias da Tia Nely</strong><small>Sabores preparados com carinho</small></span>
+</a>        <nav class="storefront-nav" aria-label="Navegação principal">
+          <a aria-current="page" href="/">Cardápio</a>
+          <a href="/quem-somos">Quem somos</a>
+          <a href="/contato">Contato</a>
+          <a class="storefront-cart-link" data-action="click-&gt;cart-drawer#open" aria-label="Abrir carrinho" href="/carrinho">
+            Carrinho <span id="cart-count" data-cart-drawer-target="count">0</span>
+</a>            <a class="storefront-nav__admin" href="/iniciar-sessao">Administração</a>
+        </nav>
+      </div>
+    </header>
+    <div id="cart-feedback" class="shell flash" role="status"></div>
+    <main class="storefront-main">
+<section class="catalog-page" aria-labelledby="catalogo-titulo">
+  <div class="catalog-page__intro">
+    <p class="storefront-kicker">Cardápio</p>
+    <h1 id="catalogo-titulo">Sabores para adoçar o seu dia.</h1>
+    <p>Confira os produtos disponíveis no cardápio da Tia Nely.</p>
+  </div>
+
+    <nav class="storefront-chips" aria-label="Filtrar produtos por categoria">
+      <a class="storefront-chip storefront-chip--active" href="/produtos">Todos</a>
+        <a class="storefront-chip " href="/categorias/quitandas-da-tia-nely">Quitandas da Tia Nely</a>
+        <a class="storefront-chip " href="/categorias/congelados-ou-assados">Congelados ou Assados</a>
+        <a class="storefront-chip " href="/categorias/sanduiches-de-pao-santo-antonio">Sanduíches de Pão Santo Antônio</a>
+    </nav>
+
+  
+    <div class="product-grid">
+      <article class="product-card">
+        <a class="product-card__link" aria-label="Ver detalhes de Pão de Queijo" href="/produtos/pao-de-queijo">
+          <div class="product-card__visual">
+            <span aria-hidden="true">P</span>
+            
+          </div>
+          <div class="product-card__content">
+            <p class="product-card__category">Congelados ou Assados</p>
+            <h2>Pão de Queijo</h2>
+            
+            <div class="product-card__footer">
+              <strong>R$ 25,00</strong>
+              <span class="product-card__availability ">Disponível</span>
+            </div>
+          </div>
+</a>        <div class="product-card__actions">
+          <a class="product-card__details" href="/produtos/pao-de-queijo">Detalhes</a>
+              <a class="product-card__buy" href="/produtos/pao-de-queijo">Escolher opção</a>
+        </div>
+      </article>
+      <article class="product-card">
+        <a class="product-card__link" aria-label="Ver detalhes de Rosquinhas de Leite Condensado com Coco" href="/produtos/rosquinhas-de-leite-condensado-com-coco">
+          <div class="product-card__visual">
+            <span aria-hidden="true">R</span>
+            
+          </div>
+          <div class="product-card__content">
+            <p class="product-card__category">Quitandas da Tia Nely</p>
+            <h2>Rosquinhas de Leite Condensado com Coco</h2>
+            <p class="product-card__description">Caseiras com leite condensado e coco.</p>
+            <div class="product-card__footer">
+              <strong>R$ 45,00</strong>
+              <span class="product-card__availability ">Disponível</span>
+            </div>
+          </div>
+</a>        <div class="product-card__actions">
+          <a class="product-card__details" href="/produtos/rosquinhas-de-leite-condensado-com-coco">Detalhes</a>
+              <a class="product-card__buy" href="/produtos/rosquinhas-de-leite-condensado-com-coco">Escolher opção</a>
+        </div>
+      </article>
+      <article class="product-card">
+        <a class="product-card__link" aria-label="Ver detalhes de Sanduíches de Pão Santo Antônio" href="/produtos/sanduiches-de-pao-santo-antonio">
+          <div class="product-card__visual">
+            <span aria-hidden="true">S</span>
+            
+          </div>
+          <div class="product-card__content">
+            <p class="product-card__category">Sanduíches de Pão Santo Antônio</p>
+            <h2>Sanduíches de Pão Santo Antônio</h2>
+            <p class="product-card__description">R$ 7,00 por unidade. Pedido mínimo: 30 unidades (a partir de R$ 210,00). Ideal para reuniões, cafés, ...</p>
+            <div class="product-card__footer">
+              <strong>R$ 7,00</strong>
+              <span class="product-card__availability ">Disponível</span>
+            </div>
+          </div>
+</a>        <div class="product-card__actions">
+          <a class="product-card__details" href="/produtos/sanduiches-de-pao-santo-antonio">Detalhes</a>
+              <a class="product-card__buy" href="/produtos/sanduiches-de-pao-santo-antonio">Escolher opção</a>
+        </div>
+      </article>
+      <article class="product-card">
+        <a class="product-card__link" aria-label="Ver detalhes de Biscoito de Queijo" href="/produtos/biscoito-de-queijo">
+          <div class="product-card__visual">
+            <span aria-hidden="true">B</span>
+            
+          </div>
+          <div class="product-card__content">
+            <p class="product-card__category">Congelados ou Assados</p>
+            <h2>Biscoito de Queijo</h2>
+            
+            <div class="product-card__footer">
+              <strong>R$ 35,00</strong>
+              <span class="product-card__availability ">Disponível</span>
+            </div>
+          </div>
+</a>        <div class="product-card__actions">
+          <a class="product-card__details" href="/produtos/biscoito-de-queijo">Detalhes</a>
+              <a class="product-card__buy" href="/produtos/biscoito-de-queijo">Escolher opção</a>
+        </div>
+      </article>
+      <article class="product-card">
+        <a class="product-card__link" aria-label="Ver detalhes de Mãe Benta" href="/produtos/mae-benta">
+          <div class="product-card__visual">
+            <img alt="Imagem de Mãe Benta" src="https://every-foundation-pregnant-voice.trycloudflare.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MSwicHVyIjoiYmxvYl9pZCJ9fQ==--705266788b601cefc4d71d854344b2b4f3d9e58e/61bb6399-51d8-46fc-a12c-149fd392dda6.jpg" />
+            
+          </div>
+          <div class="product-card__content">
+            <p class="product-card__category">Quitandas da Tia Nely</p>
+            <h2>Mãe Benta</h2>
+            
+            <div class="product-card__footer">
+              <strong>R$ 15,00</strong>
+              <span class="product-card__availability ">Disponível</span>
+            </div>
+          </div>
+</a>        <div class="product-card__actions">
+          <a class="product-card__details" href="/produtos/mae-benta">Detalhes</a>
+              <a class="product-card__buy" href="/produtos/mae-benta">Escolher opção</a>
+        </div>
+      </article>
+      <article class="product-card">
+        <a class="product-card__link" aria-label="Ver detalhes de Pão Santo Antônio Tradicional" href="/produtos/pao-santo-antonio-tradicional">
+          <div class="product-card__visual">
+            <span aria-hidden="true">P</span>
+            
+          </div>
+          <div class="product-card__content">
+            <p class="product-card__category">Quitandas da Tia Nely</p>
+            <h2>Pão Santo Antônio Tradicional</h2>
+            <p class="product-card__description">Pãozinho macio e caseiro.</p>
+            <div class="product-card__footer">
+              <strong>R$ 20,00</strong>
+              <span class="product-card__availability ">Disponível</span>
+            </div>
+          </div>
+</a>        <div class="product-card__actions">
+          <a class="product-card__details" href="/produtos/pao-santo-antonio-tradicional">Detalhes</a>
+              <a class="product-card__buy" href="/produtos/pao-santo-antonio-tradicional">Escolher opção</a>
+        </div>
+      </article>
+      <article class="product-card">
+        <a class="product-card__link" aria-label="Ver detalhes de Pão de Coco" href="/produtos/pao-de-coco">
+          <div class="product-card__visual">
+            <span aria-hidden="true">P</span>
+            
+          </div>
+          <div class="product-card__content">
+            <p class="product-card__category">Quitandas da Tia Nely</p>
+            <h2>Pão de Coco</h2>
+            <p class="product-card__description">Pãozinho caseiro com coco.</p>
+            <div class="product-card__footer">
+              <strong>R$ 15,00</strong>
+              <span class="product-card__availability ">Disponível</span>
+            </div>
+          </div>
+</a>        <div class="product-card__actions">
+          <a class="product-card__details" href="/produtos/pao-de-coco">Detalhes</a>
+              <a class="product-card__buy" href="/produtos/pao-de-coco">Escolher opção</a>
+        </div>
+      </article>
+      <article class="product-card">
+        <a class="product-card__link" aria-label="Ver detalhes de Bolinho do Céu com Coco" href="/produtos/bolinho-do-ceu-com-coco">
+          <div class="product-card__visual">
+            <img alt="Imagem de Bolinho do Céu com Coco" src="https://every-foundation-pregnant-voice.trycloudflare.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MywicHVyIjoiYmxvYl9pZCJ9fQ==--eaf06ce6136b6422463d3b98d8c0f28f25c708c7/1d22071d-3bc2-4db3-9c3c-822e7eaa26ab.jpg" />
+            
+          </div>
+          <div class="product-card__content">
+            <p class="product-card__category">Quitandas da Tia Nely</p>
+            <h2>Bolinho do Céu com Coco</h2>
+            <p class="product-card__description">Bolinhas douradas com coco ralado.</p>
+            <div class="product-card__footer">
+              <strong>R$ 16,00</strong>
+              <span class="product-card__availability ">Disponível</span>
+            </div>
+          </div>
+</a>        <div class="product-card__actions">
+          <a class="product-card__details" href="/produtos/bolinho-do-ceu-com-coco">Detalhes</a>
+              <a class="product-card__buy" href="/produtos/bolinho-do-ceu-com-coco">Escolher opção</a>
+        </div>
+      </article>
+  </div>
+
+</section>
+</main>
+    <aside class="cart-drawer" data-cart-drawer-target="drawer" aria-label="Carrinho" aria-hidden="true">
+      <div class="cart-drawer__backdrop" data-action="click->cart-drawer#close"></div>
+      <div class="cart-drawer__panel" role="dialog" aria-modal="true" aria-label="Carrinho de compras">
+        <button type="button" class="cart-drawer__close" data-action="cart-drawer#close">Fechar ×</button><h2>Seu carrinho</h2>
+        <div id="cart-drawer-content"><p>Você ainda não adicionou itens.</p></div>
+      </div>
+    </aside>
+    <footer class="storefront-footer">
+      <div class="storefront-footer__inner">
+        <div>
+          <strong>Delícias da Tia Nely</strong>
+          <p>Sabores feitos com cuidado, para compartilhar bons momentos.</p>
+        </div>
+        <nav aria-label="Links do rodapé">
+          <a href="/produtos">Cardápio</a>
+          <a href="/quem-somos">Quem somos</a>
+          <a href="/contato">Contato</a>
+        </nav>
+        <small>© 2026 Delícias da Tia Nely.</small>
+      </div>
+    </footer>
+  </body>
+</html>

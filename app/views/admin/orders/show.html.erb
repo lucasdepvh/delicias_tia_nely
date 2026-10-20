@@ -1,1 +1,17 @@
-<% content_for :title, @order.number %><section class="admin-resource"><div class="admin-resource__heading"><div><p class="admin-dashboard__eyebrow">Pedido</p><h1><%= @order.number %></h1><p><%= @order.customer.name %> · <%= @order.status_label %></p></div><%= link_to "Voltar aos pedidos", admin_orders_path, class: "admin-form__cancel" %></div><div class="admin-resource__empty"><strong><%= format_brl(@order.total) %> · <%= @order.delivery? ? "Entrega" : "Retirada" %></strong><span>Itens e envio para WhatsApp serão exibidos aqui após a implementação do checkout.</span></div></section>
+<% content_for :title, @order.number %>
+<section class="admin-resource">
+  <div class="admin-resource__heading"><div><p class="admin-dashboard__eyebrow">Pedido</p><h1><%= @order.number %></h1><p><%= @order.customer.name %> · <%= @order.status_label %></p></div><%= link_to "Voltar aos pedidos", admin_orders_path, class: "admin-form__cancel" %></div>
+  <div class="admin-resource__empty"><strong><%= format_brl(@order.total) %> · <%= @order.delivery? ? "Entrega" : "Retirada" %></strong><%= render "orders/summary", order: @order %></div>
+  <section class="admin-resource__empty">
+    <h2>Andamento e estoque</h2>
+    <p>A confirmação e os próximos status operacionais baixam o estoque uma única vez. Cancelar restaura somente uma vez.</p>
+    <%= form_with model: [:admin, @order], class: "admin-form" do |form| %>
+      <div class="admin-form__field"><%= form.label :status, "Status" %><%= form.select :status, Order.statuses.keys.map { |status| [Order.new(status: status).status_label, status] } %></div>
+      <%= form.submit "Atualizar status", class: "button" %>
+    <% end %>
+    <p><strong>Estoque:</strong> <%= @order.stock_deducted? ? "já baixado" : "ainda não baixado" %>.</p>
+  </section>
+  <% if @order.stock_movements.any? %>
+    <section class="admin-resource__empty"><h2>Movimentos de estoque</h2><ul><% @order.stock_movements.order(:created_at).each do |movement| %><li><%= movement.quantity.positive? ? "+" : "" %><%= movement.quantity %> · <%= movement.reason %></li><% end %></ul></section>
+  <% end %>
+</section>

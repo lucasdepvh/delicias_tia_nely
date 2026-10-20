@@ -1,0 +1,54 @@
+class CartController < PublicController
+  before_action :require_accepting_orders!, only: :create
+
+  def show
+    @cart = current_cart
+  end
+
+  def create
+    product = Product.active.find_by!(id: cart_params[:product_id])
+    current_cart.add(product: product, variant_id: cart_params[:variant_id], quantity: cart_params[:quantity])
+    respond_cart("Produto adicionado ao carrinho.", produto_path(product.slug), added: true)
+  rescue ActiveRecord::RecordNotFound
+    respond_cart("Produto não encontrado ou indisponível.", produtos_path, error: true)
+  rescue ArgumentError => e
+    respond_cart(e.message, produtos_path, error: true)
+  end
+
+  def update
+    message = current_cart.update(params[:key], cart_params[:quantity])
+    respond_cart(message.is_a?(String) ? message : "Carrinho atualizado.", carrinho_path)
+  rescue ArgumentError => e
+    respond_cart(e.message, carrinho_path, error: true)
+  end
+
+  def destroy
+    current_cart.remove(params[:key])
+    respond_cart("Item removido do carrinho.", carrinho_path)
+  end
+
+  def clear
+    current_cart.clear
+    respond_cart("Carrinho esvaziado.", carrinho_path)
+  end
+
+  private
+
+  def respond_cart(message, destination, error: false)
+    respond_to do |format|
+      format.html { redirect_to destination, status: :see_other, flash: { error ? :alert : :notice => message } }
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.update("cart-count", current_cart.quantity.to_s),
+          turbo_stream.update("cart-feedback", message),
+          turbo_stream.update("cart-drawer-content", partial: "cart/drawer"),
+          turbo_stream.update("cart-page", partial: "cart/content", locals: { cart: current_cart })
+        ]
+      end
+    end
+  end
+
+  def cart_params
+    params.require(:cart_item).permit(:product_id, :variant_id, :quantity)
+  end
+end

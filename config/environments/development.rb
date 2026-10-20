@@ -3,7 +3,7 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   config.enable_reloading = true
   config.eager_load = false
-  config.consider_all_requests_local = true
+  config.consider_all_requests_local = ENV["SHARE_DEMO"] != "1"
   config.server_timing = true
   config.action_controller.perform_caching = false
   config.cache_store = :memory_store
@@ -15,4 +15,8 @@ Rails.application.configure do
   config.active_record.migration_error = :page_load
   config.active_record.verbose_query_logs = true
   config.log_level = :debug
+
+  ENV.fetch("RAILS_ALLOWED_HOSTS", "").split(",").map(&:strip).reject(&:blank?).each do |host|
+    config.hosts << host
+  end
 end
