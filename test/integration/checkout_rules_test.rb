@@ -158,13 +158,13 @@ class CheckoutRulesTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "turbo atualiza contador, drawer e confirmação sem abrir o drawer" do
+  test "turbo atualiza contador e drawer sem exibir aviso de sucesso" do
     post cart_items_path, params: { cart_item: { product_id: @product.id, quantity: 1 } },
       headers: { "Accept" => "text/vnd.turbo-stream.html" }
     assert_response :success
     assert_select "turbo-stream[target='cart-count'] template", text: "1"
     assert_select "turbo-stream[target='cart-drawer-content']"
-    assert_select "turbo-stream[target='cart-feedback']"
+    assert_select "turbo-stream[target='cart-feedback']", count: 0
     assert_select "turbo-stream[target='drawer']", count: 0
     assert_select "turbo-stream[target='cart-drawer-content'] a[href='#{finalizar_pedido_path}']", "Finalizar pedido"
     assert_select "turbo-stream[target='cart-drawer-content'] .cart-drawer__item-image, turbo-stream[target='cart-drawer-content'] .cart-drawer__item-placeholder", 1

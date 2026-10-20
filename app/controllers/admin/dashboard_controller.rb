@@ -10,7 +10,14 @@ class Admin::DashboardController < Admin::BaseController
 
   def toggle_orders
     setting = StoreSetting.find_or_create_by!(singleton_key: StoreSetting::SINGLETON_KEY)
-    setting.update!(accepting_orders: !setting.accepting_orders?)
-    redirect_to admin_root_path, notice: setting.accepting_orders? ? "Loja habilitada para receber pedidos." : "Loja pausada para novos pedidos."
+
+    case setting.toggle_order_acceptance!
+    when :activated
+      redirect_to admin_root_path, notice: "Loja habilitada para receber pedidos."
+    when :paused
+      redirect_to admin_root_path, notice: "Loja pausada para novos pedidos."
+    when :missing_commercial_details
+      redirect_to admin_root_path, alert: "Não foi possível ativar os pedidos. Atualize o WhatsApp válido da loja antes de continuar."
+    end
   end
 end

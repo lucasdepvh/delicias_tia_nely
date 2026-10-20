@@ -8,7 +8,7 @@ class CartController < PublicController
   def create
     product = Product.active.find_by!(id: cart_params[:product_id])
     current_cart.add(product: product, variant_id: cart_params[:variant_id], quantity: cart_params[:quantity])
-    respond_cart("Produto adicionado ao carrinho.", produto_path(product.slug), added: true)
+    respond_cart("Produto adicionado ao carrinho.", produto_path(product.slug))
   rescue ActiveRecord::RecordNotFound
     respond_cart("Produto não encontrado ou indisponível.", produtos_path, error: true)
   rescue ArgumentError => e
@@ -34,16 +34,18 @@ class CartController < PublicController
 
   private
 
-  def respond_cart(message, destination, error: false, added: false)
+  def respond_cart(message, destination, error: false)
     respond_to do |format|
       format.html { redirect_to destination, status: :see_other, flash: { error ? :alert : :notice => message } }
       format.turbo_stream do
-        render turbo_stream: [
+        streams = [
           turbo_stream.update("cart-count", current_cart.quantity.to_s),
-          turbo_stream.update("cart-feedback", partial: "cart/feedback", locals: { message: message, error: error, added: added }),
           turbo_stream.update("cart-drawer-content", partial: "cart/drawer"),
           turbo_stream.update("cart-page", partial: "cart/content", locals: { cart: current_cart })
         ]
+        streams << turbo_stream.update("cart-feedback", partial: "cart/feedback", locals: { message: message, error: true }) if error
+
+        render turbo_stream: streams
       end
     end
   end

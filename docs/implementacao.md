@@ -1,5 +1,25 @@
 # Implementação
 
+## Feedback ao adicionar ao carrinho — 20/10/2026
+
+- Removido o aviso verde exibido ao adicionar um produto ao carrinho por Turbo. A operação continua atualizando contador, drawer e página do carrinho, sem abrir o drawer automaticamente.
+- Mensagens por Turbo são mantidas apenas para erros; o contêiner deixou de herdar o estilo de aviso verde quando está vazio.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/checkout_rules_test.rb` aprovado com **18 testes, 128 asserções, zero falhas ou erros**; `zeitwerk:check` e `git diff --check` também aprovados.
+
+## Ativação de pedidos no painel — 20/10/2026
+
+- Corrigido o estado inconsistente do botão de pedidos: antes, ele gravava a ativação mesmo sem WhatsApp comercial válido, mas a vitrine continuava bloqueada pela regra de segurança.
+- Agora a loja só é ativada quando há WhatsApp válido; caso contrário, o painel mantém pedidos pausados e informa a configuração necessária. Ao pausar, a flag também é persistida corretamente.
+- A regra foi centralizada em `StoreSetting#toggle_order_acceptance!`; o painel apenas apresenta a mensagem correspondente. Nenhum contato foi inventado nem alterado.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/foundation_access_test.rb test/models/store_setting_test.rb` aprovado com **10 testes, 58 asserções, zero falhas ou erros**; `zeitwerk:check` e `git diff --check` também aprovados.
+
+## Acesso administrativo — 20/10/2026
+
+- A tela `/iniciar-sessao` foi reorganizada em duas regiões: contexto da área restrita e formulário de acesso. Os campos agora informam a obrigatoriedade, têm textos de apoio associados para leitores de tela, foco visível, opção de manter sessão com linguagem clara e ação principal de largura completa.
+- Corrigida a tradução de falha do Devise para administrador inexistente. A interface passa a exibir “E-mail ou senha inválidos.”, sem revelar se o e-mail está cadastrado.
+- A alteração preserva rota, autenticação Devise, recuperação de senha, cabeçalho público e privacidade da página (`noindex, nofollow` e `no-store`). Nenhuma credencial, dado comercial ou comportamento de sessão foi adicionado.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/foundation_access_test.rb` aprovado com **7 testes, 42 asserções, zero falhas ou erros**; `zeitwerk:check` e `git diff --check` também aprovados.
+
 ## Tela de finalização do pedido — 19/10/2026
 
 - A tela pública `/finalizar-pedido` foi redesenhada a partir da estrutura visual recebida: etapas do pedido, cartões de identificação, recebimento, endereço, pagamento, observações e resumo detalhado.

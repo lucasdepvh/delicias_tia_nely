@@ -1,12 +1,34 @@
 <% content_for :title, "Iniciar sessão" %>
-<div class="auth-card">
-  <h1>Administração</h1>
-  <p>Use as credenciais de administrador configuradas para a loja.</p>
-  <%= form_with model: resource, as: resource_name, url: session_path(resource_name) do |form| %>
-    <div class="field"><%= form.label :email, "E-mail" %><%= form.email_field :email, autofocus: true, autocomplete: "email", required: true %></div>
-    <div class="field"><%= form.label :password, "Senha" %><%= form.password_field :password, autocomplete: "current-password", required: true %></div>
-    <% if devise_mapping.rememberable? %><div class="field"><label><%= form.check_box :remember_me %> Manter sessão</label></div><% end %>
-    <%= form.submit "Entrar", class: "button" %>
-  <% end %>
-  <% if devise_mapping.recoverable? %><p><%= link_to "Esqueci minha senha", new_admin_password_path %></p><% end %>
-</div>
+<% content_for :body_class, "storefront-body--authentication" %>
+<section class="auth-login" aria-labelledby="auth-login-title">
+  <div class="auth-login__card">
+    <div class="auth-login__intro">
+      <span class="auth-login__icon"><%= checkout_icon(:lock) %></span>
+      <p class="auth-login__eyebrow">Área restrita</p>
+      <h1 id="auth-login-title">Acesse a administração</h1>
+      <p>Entre para organizar o cardápio, acompanhar pedidos e cuidar da sua loja.</p>
+    </div>
+    <div class="auth-login__form-area">
+      <p class="auth-login__form-kicker">Dados de acesso</p>
+      <%= form_with model: resource, as: resource_name, url: session_path(resource_name), class: "auth-login__form" do |form| %>
+        <div class="auth-login__field">
+          <%= form.label :email, "E-mail (obrigatório)" %>
+          <%= form.email_field :email, autofocus: true, autocomplete: "email", required: true, aria: { describedby: "admin_email_hint" } %>
+          <p id="admin_email_hint">Use o e-mail cadastrado para a administração.</p>
+        </div>
+        <div class="auth-login__field">
+          <%= form.label :password, "Senha (obrigatório)" %>
+          <%= form.password_field :password, autocomplete: "current-password", required: true, aria: { describedby: "admin_password_hint" } %>
+          <p id="admin_password_hint">Sua senha é protegida e não é exibida.</p>
+        </div>
+        <% if devise_mapping.rememberable? %>
+          <div class="auth-login__remember">
+            <%= form.check_box :remember_me %>
+            <%= form.label :remember_me, "Manter minha sessão neste dispositivo" %>
+          </div>
+        <% end %>
+        <%= form.submit "Entrar na administração", class: "auth-login__submit" %>
+      <% end %>
+    </div>
+  </div>
+</section>

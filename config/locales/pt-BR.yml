@@ -29,6 +29,9 @@ pt-BR:
     failure:
       unauthenticated: "Faça login para continuar."
       invalid: "E-mail ou senha inválidos."
+      not_found_in_database: "E-mail ou senha inválidos."
+      admin:
+        not_found_in_database: "E-mail ou senha inválidos."
     passwords:
       send_instructions: "Se o e-mail existir, as instruções de recuperação serão enviadas."
       updated: "Sua senha foi alterada com sucesso."

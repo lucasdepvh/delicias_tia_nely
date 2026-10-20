@@ -28,6 +28,37 @@ class FoundationAccessTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "a.floating-cart #cart-count", "0"
+    assert_select ".auth-login h1", "Acesse a administração"
+    assert_select "input#admin_email[aria-describedby='admin_email_hint']"
+    assert_select "input#admin_password[aria-describedby='admin_password_hint']"
+  end
+
+  test "invalid login displays a clear Portuguese message" do
+    post admin_session_path, params: { admin: { email: "nao-existe@exemplo.test", password: "senha-incorreta" } }
+
+    assert_response :unprocessable_entity
+    assert_select ".flash.flash--alert", "E-mail ou senha inválidos."
+  end
+
+  test "dashboard only activates orders with a valid WhatsApp" do
+    admin = Admin.create!(email: "gestora@exemplo.test", password: "senha-segura-123", password_confirmation: "senha-segura-123")
+    setting = StoreSetting.create!(singleton_key: StoreSetting::SINGLETON_KEY, store_name: "Loja de teste", accepting_orders: false, minimum_order_value: 0, default_delivery_fee: 10)
+
+    post admin_session_path, params: { admin: { email: admin.email, password: "senha-segura-123" } }
+    post admin_toggle_orders_path
+
+    assert_redirected_to admin_root_path
+    assert_not setting.reload.accepting_orders
+    follow_redirect!
+    assert_select ".flash.flash--alert", "Não foi possível ativar os pedidos. Atualize o WhatsApp válido da loja antes de continuar."
+
+    setting.update!(whatsapp_number: "5511999999999")
+    post admin_toggle_orders_path
+
+    assert_redirected_to admin_root_path
+    assert setting.reload.accepting_orders
+    follow_redirect!
+    assert_select ".flash", "Loja habilitada para receber pedidos."
   end
 
   test "administrator can sign in and out" do

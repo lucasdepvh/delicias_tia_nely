@@ -19,7 +19,7 @@
     <%= stylesheet_link_tag "style", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="storefront-body <%= "storefront-body--checkout" if controller_path == "checkout" %>" data-controller="cart-drawer">
+  <body class="storefront-body <%= "storefront-body--checkout" if controller_path == "checkout" %> <%= yield(:body_class) if content_for?(:body_class) %>" data-controller="cart-drawer">
     <header class="storefront-header">
       <div class="storefront-header__inner">
         <%= link_to root_path, class: "storefront-brand", aria: { label: "Página inicial de #{brand_name}" } do %>
@@ -40,7 +40,7 @@
     <% flash.each do |type, message| %>
       <div class="shell flash <%= "flash--alert" if type.to_s == "alert" %>" role="status"><%= message %></div>
     <% end %>
-    <div id="cart-feedback" class="shell flash" role="status"></div>
+    <div id="cart-feedback" role="status"></div>
     <main class="storefront-main"><%= yield %></main>
     <%= link_to carrinho_path, class: "floating-cart", data: { action: "click->cart-drawer#open" }, aria: { label: "Abrir carrinho com #{current_cart.quantity} itens" } do %>
       <%= navigation_icon(:cart) %>

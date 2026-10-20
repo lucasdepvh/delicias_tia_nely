@@ -29,6 +29,19 @@ class StoreSetting < ApplicationRecord
     accepting_orders && commercial_details_ready?
   end
 
+  def toggle_order_acceptance!
+    if accepting_orders?
+      update!(accepting_orders: false)
+      :paused
+    elsif commercial_details_ready?
+      update!(accepting_orders: true)
+      :activated
+    else
+      update!(accepting_orders: false)
+      :missing_commercial_details
+    end
+  end
+
   def self.ransackable_attributes(_auth_object = nil)
     %w[store_name accepting_orders minimum_order_value default_delivery_fee]
   end
