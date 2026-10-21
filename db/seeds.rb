@@ -20,6 +20,7 @@ if admin_email.present? || admin_password.present?
   end
 end
 
+# As imagens deste catálogo são anexadas manualmente pelo formulário administrativo.
 initial_catalog = [
     {
       name: "Rosquinhas de Leite Condensado com Coco",

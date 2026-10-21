@@ -91,6 +91,13 @@ class CheckoutController < PublicController
   end
 
   def checkout_params
-    params.fetch(:order, ActionController::Parameters.new).permit(:fulfillment_method, :payment_method, :change_for, :notes)
+    params.fetch(:order, ActionController::Parameters.new).permit(:fulfillment_method, :payment_method, :change_for, :notes).tap do |permitted|
+      permitted[:change_for] = normalize_brl_amount(permitted[:change_for])
+    end
+  end
+
+  def normalize_brl_amount(value)
+    text = value.to_s.gsub(/[^\d,.-]/, "")
+    text.include?(",") ? text.delete(".").tr(",", ".") : text
   end
 end

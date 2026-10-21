@@ -40,6 +40,15 @@ class CheckoutRulesTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{pedido_path(Order.last.number)}']"
   end
 
+  test "aceita troco com a máscara monetária brasileira" do
+    add
+
+    checkout(order: { payment_method: "cash", change_for: "R$ 50,00" })
+
+    assert_response :see_other
+    assert_equal BigDecimal("50"), Order.last.change_for
+  end
+
   test "resumo so pode ser lido pela sessao que criou o pedido" do
     add
     checkout

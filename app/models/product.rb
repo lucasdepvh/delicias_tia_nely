@@ -4,6 +4,8 @@ class Product < ApplicationRecord
   has_many :product_images, dependent: :restrict_with_error
   has_one_attached :main_image
 
+  accepts_nested_attributes_for :product_variants, allow_destroy: true, reject_if: :all_blank
+
   validates :name, :slug, presence: true
   validates :slug, uniqueness: true
   validates :price, numericality: { greater_than_or_equal_to: 0 }
@@ -18,10 +20,11 @@ class Product < ApplicationRecord
 
   def available?
     return false unless active?
-    return true if track_inventory? && quantity.positive?
-    return product_variants.active.any?(&:available?) if product_variants.active.exists?
+    active_variants = product_variants.active
+    return active_variants.any?(&:available?) if active_variants.exists?
+    return quantity.positive? if track_inventory?
 
-    !track_inventory?
+    true
   end
   def main_image_attached?
     main_image.attached?

@@ -12,7 +12,8 @@ class ProductsController < PublicController
   def show
     @product = Product.active.includes(:category, :product_variants).find_by!(slug: params[:slug])
     @store_setting = StoreSetting.current
-    @available_variants = @product.product_variants.active.select(&:available?)
+    @variants = @product.product_variants.active.to_a
+    @available_variants = @variants.select(&:available?)
     @related_products = Product.active.includes(:category).where(category: @product.category).where.not(id: @product.id).display_order.limit(4)
   end
 end

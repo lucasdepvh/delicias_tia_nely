@@ -6,5 +6,5 @@
     <div class="field"><%= form.label :email, "E-mail" %><%= form.email_field :email, autofocus: true, autocomplete: "email", required: true %></div>
     <%= form.submit "Enviar instruções", class: "button" %>
   <% end %>
-  <p><%= link_to "Voltar para entrar", new_admin_session_path %></p>
+  <p><%= link_to "Voltar para entrar", new_admin_session_path, class: "auth-back-link" %></p>
 </div>

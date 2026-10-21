@@ -12,7 +12,7 @@ class Admin::OrdersController < Admin::BaseController
   end
 
   def show
-    @order = Order.includes(:customer, :order_items, :stock_movements).find(params[:id])
+    @order = Order.includes(:customer, :order_items, :stock_movements, :automatic_financial_entry).find(params[:id])
   end
 
   def update

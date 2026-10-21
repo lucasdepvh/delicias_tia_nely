@@ -28,7 +28,7 @@ class Cart
       variant_id = entry["variant_id"] || entry[:variant_id]
       variant = variant_id.present? ? product.product_variants.active.find_by(id: variant_id) : nil
       next if variant_id.present? && variant.nil?
-      next if variant.nil? && product.product_variants.active.exists? && !(product.track_inventory? && product.quantity.positive?)
+      next if variant.nil? && product.product_variants.active.exists?
       next unless available?(product, variant)
 
       Item.new(key: key, product: product, variant: variant, quantity: entry["quantity"].to_i)
@@ -115,7 +115,7 @@ class Cart
   private
 
   def resolve_variant(product, variant_id)
-    if product.product_variants.active.exists? && variant_id.blank? && !(product.track_inventory? && product.quantity.positive? && !product.product_variants.active.any?(&:available?))
+    if product.product_variants.active.exists? && variant_id.blank?
       raise ArgumentError, "Escolha uma opção do produto antes de adicionar ao carrinho."
     end
     return nil if variant_id.blank?

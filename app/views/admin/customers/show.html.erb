@@ -1,4 +1,13 @@
 <% content_for :title, @customer.name %>
-<div class="admin-resource"><div class="admin-resource__heading"><div><p class="admin-dashboard__eyebrow">Cliente</p><h1><%= @customer.name %></h1><p><%= @customer.phone %><%= " · #{@customer.email}" if @customer.email.present? %></p></div><%= link_to "Editar", edit_admin_customer_path(@customer), class: "button" %></div>
-  <div class="admin-resource__empty"><strong>Dados de entrega</strong><span><%= [@customer.street, @customer.number, @customer.neighborhood, @customer.city, @customer.state, @customer.zip_code].compact_blank.join(", ").presence || "Nenhum endereço informado." %></span><% if @customer.reference.present? %><span>Referência: <%= @customer.reference %></span><% end %><% if @customer.notes.present? %><span>Observações: <%= @customer.notes %></span><% end %></div>
-</div>
+<section class="admin-customer-detail" aria-labelledby="cliente-titulo">
+  <header class="admin-customer-detail__heading">
+    <div><p class="admin-dashboard__eyebrow">Cliente</p><h1 id="cliente-titulo"><%= @customer.name %></h1><p>Dados usados nos pedidos da loja.</p></div>
+    <%= link_to "Voltar aos clientes", admin_customers_path, class: "admin-form__cancel" %>
+  </header>
+  <section class="admin-customer-detail__order-count" aria-label="Pedidos vinculados"><span class="material-symbols-rounded" aria-hidden="true">receipt_long</span><div><p>Pedidos vinculados</p><strong><%= @orders_count %></strong><small><%= @orders_count == 1 ? "pedido registrado" : "pedidos registrados" %></small></div></section>
+  <div class="admin-customer-detail__grid">
+    <section class="admin-customer-detail__card"><header><span class="material-symbols-rounded" aria-hidden="true">person</span><div><h2>Contato</h2><p>Informações de identificação.</p></div></header><dl><div><dt>Telefone</dt><dd><%= format_phone(@customer.phone) %></dd></div><div><dt>E-mail</dt><dd><%= @customer.email.presence || "Não informado" %></dd></div></dl></section>
+    <section class="admin-customer-detail__card"><header><span class="material-symbols-rounded" aria-hidden="true">location_on</span><div><h2>Endereço</h2><p>Dados de entrega cadastrados.</p></div></header><dl><div><dt>Endereço</dt><dd><%= [@customer.street, @customer.number, @customer.neighborhood, @customer.city, @customer.state, @customer.zip_code].compact_blank.join(", ").presence || "Nenhum endereço informado." %></dd></div><% if @customer.complement.present? %><div><dt>Complemento</dt><dd><%= @customer.complement %></dd></div><% end %><% if @customer.reference.present? %><div><dt>Referência</dt><dd><%= @customer.reference %></dd></div><% end %></dl></section>
+  </div>
+  <% if @customer.notes.present? %><section class="admin-customer-detail__notes"><h2>Observações</h2><%= simple_format(@customer.notes) %></section><% end %>
+</section>

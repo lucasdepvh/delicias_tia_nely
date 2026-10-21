@@ -49,6 +49,19 @@ class ProductCatalogTest < ActionDispatch::IntegrationTest
     assert_select ".product-detail__availability", /Disponível no cardápio/
   end
 
+  test "cliente escolhe uma opção disponível em cartões de tamanho e preço" do
+    available_variant = @available_product.product_variants.create!(name: "10 unidades", price: 15, active: true, quantity: 4)
+    unavailable_variant = @available_product.product_variants.create!(name: "20 unidades", price: 28, active: true, quantity: 0)
+
+    get produto_path(@available_product.slug)
+
+    assert_response :success
+    assert_select ".product-detail__variant-options .product-detail__variant-option", count: 2
+    assert_select "input[type='radio'][name='cart_item[variant_id]'][value='#{available_variant.id}']"
+    assert_select "input[type='radio'][name='cart_item[variant_id]'][value='#{unavailable_variant.id}'][disabled]"
+    assert_select ".product-detail__variant-option", /R\$ 15,00/
+  end
+
   test "produto com opções sem estoque não mostra seletor vazio nem formulário de compra" do
     @available_product.product_variants.create!(name: "Grande", active: true, quantity: 0)
     @available_product.update!(track_inventory: true, quantity: 0)
@@ -58,19 +71,22 @@ class ProductCatalogTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".product-detail__availability", /Indisponível no momento/
     assert_select ".product-detail__variants", count: 0
+    assert_select ".product-detail__variant-list", /Grande/
+    assert_select ".product-detail__variant-list", /Indisponível no momento/
     assert_select "form[action='#{cart_items_path}']", count: 0
     assert_select ".product-detail__notice", /indisponível no momento/
   end
-  test "estoque do produto permite compra direta quando as opções não têm saldo" do
+  test "produto com opções exige estoque da opção para ficar disponível" do
     @available_product.update!(track_inventory: true, quantity: 7)
     @available_product.product_variants.create!(name: "Grande", active: true, quantity: 0)
 
     get produto_path(@available_product.slug)
 
     assert_response :success
-    assert_select ".product-detail__availability", /Disponível no cardápio/
+    assert_select ".product-detail__availability", /Indisponível no momento/
     assert_select ".product-detail__variants", count: 0
-    assert_select "form[action='#{cart_items_path}'] input[name='cart_item[product_id]'][value='#{@available_product.id}']"
+    assert_select ".product-detail__variant-list", /Grande/
+    assert_select "form[action='#{cart_items_path}']", count: 0
   end
 
   test "produto inativo não é exposto diretamente" do

@@ -41,11 +41,6 @@ export default class extends Controller {
       this.quote()
     } catch { this.messageTarget.textContent = "Consulta indisponível. Preencha o endereço manualmente." }
   }
-  formatPostalCode(event) { event.target.value = event.target.value.replace(/\D/g, "").slice(0, 8).replace(/^(\d{5})(\d)/, "$1-$2") }
-  formatPhone(event) {
-    const digits = event.target.value.replace(/\D/g, "").slice(0, 15)
-    event.target.value = digits.length <= 11 ? digits.replace(/^(\d{2})(\d)/, "($1) $2").replace(/(\d{4,5})(\d{4})$/, "$1-$2") : digits
-  }
   submit(event) {
     if (this.submitting) { event.preventDefault(); return }
     this.submitting = true

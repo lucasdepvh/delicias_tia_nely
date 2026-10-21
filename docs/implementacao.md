@@ -1,5 +1,21 @@
 # Implementação
 
+## Escolha e cadastro de opções de produto — 21/10/2026
+
+- O formulário administrativo de produto agora contém a seção “Opções e preços”. Ela permite adicionar/remover tamanhos ou sabores, informar preço, estoque, alerta de estoque baixo e ativação de cada opção, sem depender de uma tela separada.
+- Na vitrine, opções são apresentadas como cartões selecionáveis com nome, preço e disponibilidade. Produtos que tenham opções exigem a escolha de uma opção: saldo do produto pai não libera uma compra direta que ignoraria o tamanho/sabor escolhido.
+- Quando todas as opções estão sem saldo, seus nomes e preços permanecem visíveis no detalhe, identificados como indisponíveis. Assim a vitrine não inventa estoque e a pessoa entende o que será liberado após reposição.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/admin_product_variants_test.rb test/integration/product_catalog_test.rb test/integration/checkout_rules_test.rb` aprovado com **27 testes, 193 asserções, zero falhas ou erros**; `zeitwerk:check` e `git diff --check` também aprovados.
+- Correção visual posterior: regras antigas mais específicas estavam forçando as opções em uma linha flexível. A grade agora prevalece com duas colunas amplas e muda para uma coluna em até 700 px, impedindo compressão, sobreposição e rolagem horizontal.
+- Evidências complementares: `test/integration/product_catalog_test.rb test/integration/checkout_rules_test.rb` aprovado com **26 testes, 184 asserções, zero falhas ou erros**; `zeitwerk:check` e `git diff --check` também aprovados.
+
+## Catálogo de quitandas inicial — 21/10/2026
+
+- A seed idempotente já registra a categoria “Quitandas da Tia Nely” e os cinco produtos da página recebida: Rosquinhas de Leite Condensado com Coco, Mãe Benta, Pão Santo Antônio Tradicional, Pão de Coco e Bolinho do Céu com Coco. Todas as porções e preços da referência foram conferidos na seed.
+- Cada item é um produto e cada tamanho/sabor é uma variação com preço próprio. Esse formato permite que o cliente selecione a opção correta no detalhe antes de adicionar ao carrinho, preservando o preço no pedido.
+- Nenhuma imagem ou quantidade de estoque é criada pela seed. A imagem principal pode ser anexada manualmente pelo formulário administrativo; enquanto as variações estiverem com estoque zero, o detalhe mantém as opções e preços visíveis como indisponíveis, sem simular venda.
+- Evidências: seed aplicada uma vez no banco local de desenvolvimento, sem erro. Migrations aplicadas em banco de teste novo; `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/models/catalog_seed_test.rb test/integration/product_catalog_test.rb` aprovado com **7 testes, 63 asserções, zero falhas ou erros**. `zeitwerk:check` e `git diff --check` também aprovados.
+
 ## Feedback ao adicionar ao carrinho — 20/10/2026
 
 - Removido o aviso verde exibido ao adicionar um produto ao carrinho por Turbo. A operação continua atualizando contador, drawer e página do carrinho, sem abrir o drawer automaticamente.
@@ -33,6 +49,47 @@
 - Interação do drawer: alterar a quantidade pelo campo ou pelas setas envia a atualização automaticamente por Turbo. O texto de atualização foi removido da interface; remoção passou a usar um botão de lixeira com rótulo acessível.
 - Cabeçalho e rodapé: o carrinho passou a ser um botão flutuante com contador, mantendo a abertura do drawer. O rodapé foi reorganizado em formato centralizado, com links públicos e administrativos e crédito para Lucas Martins, direcionado ao portfólio informado pelo proprietário.
 - Finalização: após validar e gravar o pedido, o checkout agora responde diretamente com redirecionamento 303 para o WhatsApp oficial, levando a mensagem do pedido já preenchida. O resumo autorizado permanece acessível pelo último pedido no carrinho para consulta ou reenvio posterior.
+
+## Navegação administrativa — 21/10/2026
+
+- Removido o atalho redundante “Ver vitrine” da barra superior. O acesso permanece uma única vez, no rodapé do menu lateral.
+- Em desktop, a barra lateral passou de 238 px para 280 px; a logomarca foi ampliada para 64 px e os itens do menu ganharam área de toque e tipografia maiores. Em celular, a marca permanece compacta e a navegação inferior não foi alterada.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/foundation_access_test.rb` aprovado com **8 testes, 57 asserções, zero falhas ou erros**; `zeitwerk:check` e `git diff --check` também aprovados.
+
+## Pedidos vinculados ao cliente — 21/10/2026
+
+- A listagem administrativa de clientes passou a informar quantos pedidos cada cliente possui, calculando a contagem na própria consulta para evitar uma consulta adicional por linha.
+- O detalhe do cliente ganhou um cartão de resumo com ícone e a quantidade de pedidos vinculados, incluindo a mensagem singular/plural apropriada.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/admin_customer_show_test.rb` aprovado com **2 testes, 20 asserções, zero falhas ou erros**; `zeitwerk:check` e `git diff --check` também aprovados.
+
+## Visualização de clientes — 21/10/2026
+
+- A página administrativa de cliente passou a concentrar contato, endereço e observações em cartões legíveis, com disposição em duas colunas amplas e uma coluna no celular.
+- Foi incluído o botão destacado “Voltar aos clientes”. A ação de edição não aparece mais nessa visualização, evitando misturar consulta com alteração.
+- A listagem usa ícones de visualizar, editar e excluir com rótulos acessíveis. Telefones são apresentados com a máscara brasileira, inclusive nas referências de cliente em pedidos e lançamentos.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/admin_customer_show_test.rb` aprovado com **2 testes, 14 asserções, zero falhas ou erros**; `zeitwerk:check` e `git diff --check` também aprovados.
+
+## Detalhe de lançamento financeiro — 21/10/2026
+
+- A listagem financeira passou a oferecer a ação "Ver" para cada lançamento. A tela de detalhe apresenta valor, tipo, origem, situação, vencimento, pagamento e observações.
+- Quando houver pedido vinculado, a tela exibe cliente, telefone, recebimento, pagamento e a tabela dos itens do pedido, além de fornecer acesso ao detalhe administrativo do pedido. Lançamentos automáticos permanecem protegidos contra edição e exclusão direta; os manuais conservam essas ações com confirmação para excluir.
+- Adicionado teste de integração da tela de detalhe. A execução continua pendente porque Ruby e Bundler não estão disponíveis neste WSL.
+- Datas de vencimento e pagamento são apresentadas explicitamente como `dd/mm/aaaa`, sem depender do formato `date.default` que não existe nas traduções atuais.
+
+## Detalhe administrativo de pedido — 21/10/2026
+
+- O botão de WhatsApp foi removido apenas do detalhe administrativo do pedido. O resumo público autorizado mantém o botão de envio, que faz parte do fluxo do cliente.
+- O detalhe foi reorganizado em cards próprios de itens/totais, atualização de status, movimentos e resumo do cliente. No celular, o layout se empilha em uma coluna e a tabela de itens preserva leitura por rolagem horizontal interna.
+- O conjunto do detalhe é centralizado no espaço de trabalho em telas amplas, mantendo largura máxima legível; em telas móveis ele ocupa toda a largura disponível.
+- A ação "Ver" de lançamento automático passou a abrir diretamente o pedido vinculado, inclusive quando a URL financeira é acessada manualmente. O pedido exibe o lançamento sincronizado e concentra a alteração de status que controla a baixa/restauração de estoque. Lançamentos manuais continuam no detalhe financeiro próprio.
+- Links de retorno receberam tratamento visual padronizado: borda, contraste, seta, área mínima de toque e foco visível, preservando a adaptação para celular.
+- Evidências: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/admin_order_status_test.rb test/integration/admin_financial_entry_show_test.rb` aprovado com **2 testes, 28 asserções, zero falhas ou erros**; `zeitwerk:check` e `git diff --check` também aprovados.
+
+## Máscaras de campos — 21/10/2026
+
+- Adicionado controlador Stimulus reutilizável para máscara de telefone, CEP e moeda brasileira. O checkout mascara WhatsApp, CEP e troco; a administração mascara telefone/CEP de clientes e valores de produto e lançamento financeiro.
+- Campos monetários aceitam a digitação `R$ 1.234,56` e os controllers normalizam esse formato para decimal antes da validação e persistência. Quantidade, data e campos textuais não recebem máscara por não terem formato visual fixo.
+- Evidência: teste de integração cobre o troco enviado com máscara monetária. A execução foi bloqueada neste ambiente porque Ruby e Bundler não estão instalados no WSL; `git diff --check` foi aprovado. A suíte completa permanece pendente de execução em ambiente Rails.
 
 ## Revisão do caminho carrinho → pedido → WhatsApp — 19/10/2026
 

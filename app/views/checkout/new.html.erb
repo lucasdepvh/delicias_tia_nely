@@ -30,7 +30,7 @@
             <%= text_field_tag "customer[name]", @customer.name, required: true, autocomplete: "name", placeholder: "Como podemos chamar você?" %>
           </label>
           <label class="order-checkout__field">WhatsApp
-            <%= telephone_field_tag "customer[phone]", @customer.phone, required: true, autocomplete: "tel", placeholder: "(00) 00000-0000", data: { action: "input->checkout#formatPhone" } %>
+            <%= telephone_field_tag "customer[phone]", @customer.phone, required: true, autocomplete: "tel", placeholder: "(00) 00000-0000", data: { controller: "input-mask", input_mask_type_value: "phone", action: "input->input-mask#format" } %>
           </label>
           <label class="order-checkout__field">E-mail <span>(opcional)</span>
             <%= email_field_tag "customer[email]", @customer.email, autocomplete: "email", placeholder: "voce@exemplo.com" %>
@@ -61,7 +61,7 @@
           <p>Preencha o endereço para calcularmos a entrega.</p>
           <div class="order-checkout__field-grid">
             <label class="order-checkout__field">CEP
-              <%= text_field_tag "customer[zip_code]", @customer.zip_code, inputmode: "numeric", autocomplete: "postal-code", placeholder: "00000-000", data: { action: "blur->checkout#lookupPostalCode input->checkout#formatPostalCode" } %>
+              <%= text_field_tag "customer[zip_code]", @customer.zip_code, inputmode: "numeric", autocomplete: "postal-code", placeholder: "00000-000", data: { controller: "input-mask", input_mask_type_value: "postal-code", action: "blur->checkout#lookupPostalCode input->input-mask#format" } %>
             </label>
             <label class="order-checkout__field order-checkout__field--wide">Rua
               <%= text_field_tag "customer[street]", @customer.street, autocomplete: "street-address", placeholder: "Rua, avenida ou travessa" %>
@@ -98,7 +98,7 @@
             <%= select_tag "order[payment_method]", options_for_select([["Pix", "pix"], ["Cartão", "card"], ["Dinheiro", "cash"], ["Cartão na entrega", "card_delivery"], ["Cartão na retirada", "card_pickup"], ["Transferência", "transfer"], ["Outro", "other"]], @order.payment_method) %>
           </label>
           <label class="order-checkout__field">Troco para <span>(somente dinheiro)</span>
-            <%= number_field_tag "order[change_for]", @order.change_for, min: 0, step: "0.01", inputmode: "decimal", placeholder: "R$ 0,00" %>
+            <%= text_field_tag "order[change_for]", @order.change_for, inputmode: "numeric", placeholder: "R$ 0,00", data: { controller: "input-mask", input_mask_type_value: "currency", action: "input->input-mask#formatCurrency" } %>
           </label>
         </div>
       </section>

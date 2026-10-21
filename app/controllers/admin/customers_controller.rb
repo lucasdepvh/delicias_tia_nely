@@ -2,10 +2,12 @@ class Admin::CustomersController < Admin::BaseController
   before_action :set_customer, only: %i[show edit update destroy]
 
   def index
-    @customers = Customer.order(:name)
+    @customers = Customer.left_joins(:orders).select("customers.*, COUNT(orders.id) AS orders_count").group("customers.id").order(:name)
   end
 
-  def show; end
+  def show
+    @orders_count = @customer.orders.count
+  end
   def edit; end
 
   def update

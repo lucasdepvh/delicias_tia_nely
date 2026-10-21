@@ -1,5 +1,5 @@
 class Admin::FinancialEntriesController < Admin::BaseController
-  before_action :set_financial_entry, only: %i[show edit update destroy]
+  before_action :set_financial_entry, only: %i[edit update destroy]
 
   def index
     @filters = params.permit(:q, :entry_type, :status, :origin, :starts_on, :ends_on)
@@ -20,7 +20,10 @@ class Admin::FinancialEntriesController < Admin::BaseController
     @financial_entry = FinancialEntry.new(entry_type: :expense, status: :pending, due_date: Time.zone.today)
   end
 
-  def show; end
+  def show
+    @financial_entry = FinancialEntry.includes(order: [ :customer, :order_items ]).find(params[:id])
+    return redirect_to admin_order_path(@financial_entry.order) if @financial_entry.automatic? && @financial_entry.order
+  end
 
   def create
     @financial_entry = FinancialEntry.new(financial_entry_params.merge(automatic: false))
@@ -50,5 +53,14 @@ class Admin::FinancialEntriesController < Admin::BaseController
   private
 
   def set_financial_entry = @financial_entry = FinancialEntry.find(params[:id])
-  def financial_entry_params = params.require(:financial_entry).permit(:description, :entry_type, :status, :amount, :due_date, :paid_at, :notes)
+  def financial_entry_params
+    params.require(:financial_entry).permit(:description, :entry_type, :status, :amount, :due_date, :paid_at, :notes).tap do |permitted|
+      permitted[:amount] = normalize_brl_amount(permitted[:amount])
+    end
+  end
+
+  def normalize_brl_amount(value)
+    text = value.to_s.gsub(/[^\d,.-]/, "")
+    text.include?(",") ? text.delete(".").tr(",", ".") : text
+  end
 end

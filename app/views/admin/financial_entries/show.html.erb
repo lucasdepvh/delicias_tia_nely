@@ -1,2 +1,49 @@
-<% content_for :title, @financial_entry.description %>
-<div class="admin-resource"><div class="admin-resource__heading"><div><p class="admin-dashboard__eyebrow">Financeiro comercial</p><h1><%= @financial_entry.description %></h1><p><%= @financial_entry.income? ? "Receita" : "Despesa" %> · <%= format_brl(@financial_entry.amount) %></p></div><% unless @financial_entry.automatic? %><%= link_to "Editar", edit_admin_financial_entry_path(@financial_entry), class: "button" %><% end %></div><div class="admin-resource__empty"><strong><%= @financial_entry.status == "paid" ? "Pago" : @financial_entry.status == "cancelled" ? "Cancelado" : "Pendente" %></strong><span>Vencimento: <%= @financial_entry.due_date&.strftime("%d/%m/%Y") || "Não informado" %></span><% if @financial_entry.paid_at.present? %><span>Pagamento: <%= @financial_entry.paid_at.strftime("%d/%m/%Y") %></span><% end %><% if @financial_entry.notes.present? %><span>Observações: <%= @financial_entry.notes %></span><% end %></div></div>
+<% content_for :title, "Lançamento financeiro" %>
+<% status_label = @financial_entry.paid? ? "Pago" : @financial_entry.cancelled? ? "Cancelado" : "Pendente" %>
+<% type_label = @financial_entry.income? ? "Receita" : "Despesa" %>
+
+<section class="admin-financial-entry" aria-labelledby="lancamento-titulo">
+  <header class="admin-financial-entry__heading">
+    <div>
+      <p class="admin-dashboard__eyebrow">Lançamento financeiro</p>
+      <h1 id="lancamento-titulo"><%= @financial_entry.description %></h1>
+      <p>Criado em <%= l(@financial_entry.created_at, format: :short) %></p>
+    </div>
+    <div class="admin-financial-entry__actions">
+      <%= link_to "Voltar ao financeiro", admin_financial_entries_path, class: "admin-form__cancel" %>
+      <% if @financial_entry.order %><%= link_to "Ver pedido", admin_order_path(@financial_entry.order), class: "button" %><% end %>
+      <% unless @financial_entry.automatic? %>
+        <%= link_to "Editar", edit_admin_financial_entry_path(@financial_entry), class: "button" %>
+        <%= button_to "Excluir", admin_financial_entry_path(@financial_entry), method: :delete, class: "admin-financial-entry__delete", form: { data: { turbo_confirm: "Excluir este lançamento financeiro?" } } %>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="admin-financial-entry__layout">
+    <div class="admin-financial-entry__content">
+      <section class="admin-financial-entry__card">
+        <header><div><h2>Dados do lançamento</h2><p>Informações registradas no financeiro.</p></div><span class="admin-financial-entry__status admin-financial-entry__status--<%= @financial_entry.status %>"><%= status_label %></span></header>
+        <dl class="admin-financial-entry__details">
+          <div><dt>Tipo</dt><dd><%= type_label %></dd></div>
+          <div><dt>Origem</dt><dd><%= @financial_entry.automatic? ? "Automática pelo pedido" : "Manual" %></dd></div>
+          <div><dt>Vencimento</dt><dd><%= @financial_entry.due_date&.strftime("%d/%m/%Y") || "Não informado" %></dd></div>
+          <div><dt>Pagamento</dt><dd><%= @financial_entry.paid_at&.strftime("%d/%m/%Y") || "Ainda não pago" %></dd></div>
+        </dl>
+        <% if @financial_entry.notes.present? %><div class="admin-financial-entry__notes"><h3>Observações</h3><%= simple_format(@financial_entry.notes) %></div><% end %>
+      </section>
+
+      <% if @financial_entry.order %>
+        <section class="admin-financial-entry__card">
+          <header><div><h2>Pedido vinculado</h2><p>Este lançamento é atualizado conforme o status do pedido.</p></div><%= link_to "Abrir pedido", admin_order_path(@financial_entry.order), class: "admin-financial-entry__link" %></header>
+          <div class="admin-financial-entry__order"><div><small>Pedido</small><strong><%= @financial_entry.order.number %></strong></div><div><small>Cliente</small><strong><%= @financial_entry.order.customer.name %></strong><small><%= format_phone(@financial_entry.order.customer.phone) %></small></div><div><small>Recebimento</small><strong><%= @financial_entry.order.delivery? ? "Entrega" : "Retirada" %></strong></div><div><small>Pagamento</small><strong><%= @financial_entry.order.payment_label %></strong></div></div>
+          <div class="admin-financial-entry__items"><h3>Itens do pedido</h3><div><table><thead><tr><th>Item</th><th>Quantidade</th><th>Unitário</th><th>Total</th></tr></thead><tbody><% @financial_entry.order.order_items.each do |item| %><tr><td><%= item.product_name %></td><td><%= item.quantity %></td><td><%= format_brl(item.unit_price) %></td><td><strong><%= format_brl(item.total) %></strong></td></tr><% end %></tbody></table></div></div>
+        </section>
+      <% end %>
+    </div>
+
+    <aside class="admin-financial-entry__summary" aria-label="Resumo do lançamento">
+      <span><%= type_label %></span><strong><%= format_brl(@financial_entry.amount) %></strong><p><%= status_label %></p>
+      <dl><div><dt>Vencimento</dt><dd><%= @financial_entry.due_date&.strftime("%d/%m/%Y") || "—" %></dd></div><div><dt>Pago em</dt><dd><%= @financial_entry.paid_at&.strftime("%d/%m/%Y") || "—" %></dd></div></dl>
+    </aside>
+  </div>
+</section>

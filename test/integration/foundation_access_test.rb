@@ -71,6 +71,8 @@ class FoundationAccessTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".admin-overview", /Loja pausada/
     assert_select ".admin-overview__metrics article", 4
+    assert_select ".admin-workspace__topbar a[href='#{root_path}']", count: 0
+    assert_select ".admin-sidebar__footer a[href='#{root_path}']", /Ver vitrine/
 
     delete destroy_admin_session_path
     assert_redirected_to root_path

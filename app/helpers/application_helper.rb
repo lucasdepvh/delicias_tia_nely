@@ -33,6 +33,16 @@ module ApplicationHelper
     number_to_currency(value || 0, unit: "R$", separator: ",", delimiter: ".", format: "%u %n")
   end
 
+  def format_phone(value)
+    digits = value.to_s.gsub(/\D/, "")
+
+    case digits.length
+    when 11 then "(#{digits[0, 2]}) #{digits[2, 5]}-#{digits[7, 4]}"
+    when 10 then "(#{digits[0, 2]}) #{digits[2, 4]}-#{digits[6, 4]}"
+    else value
+    end
+  end
+
   def canonical_url
     request.original_url.split("?").first
   end

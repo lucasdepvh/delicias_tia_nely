@@ -1,17 +1,30 @@
 <% content_for :title, @order.number %>
-<section class="admin-resource">
-  <div class="admin-resource__heading"><div><p class="admin-dashboard__eyebrow">Pedido</p><h1><%= @order.number %></h1><p><%= @order.customer.name %> · <%= @order.status_label %></p></div><%= link_to "Voltar aos pedidos", admin_orders_path, class: "admin-form__cancel" %></div>
-  <div class="admin-resource__empty"><strong><%= format_brl(@order.total) %> · <%= @order.delivery? ? "Entrega" : "Retirada" %></strong><%= render "orders/summary", order: @order %></div>
-  <section class="admin-resource__empty">
-    <h2>Andamento e estoque</h2>
-    <p>A confirmação e os próximos status operacionais baixam o estoque uma única vez. Cancelar restaura somente uma vez.</p>
-    <%= form_with model: [:admin, @order], class: "admin-form" do |form| %>
-      <div class="admin-form__field"><%= form.label :status, "Status" %><%= form.select :status, Order.statuses.keys.map { |status| [Order.new(status: status).status_label, status] } %></div>
-      <%= form.submit "Atualizar status", class: "button" %>
-    <% end %>
-    <p><strong>Estoque:</strong> <%= @order.stock_deducted? ? "já baixado" : "ainda não baixado" %>.</p>
-  </section>
-  <% if @order.stock_movements.any? %>
-    <section class="admin-resource__empty"><h2>Movimentos de estoque</h2><ul><% @order.stock_movements.order(:created_at).each do |movement| %><li><%= movement.quantity.positive? ? "+" : "" %><%= movement.quantity %> · <%= movement.reason %></li><% end %></ul></section>
-  <% end %>
+<section class="admin-order-detail" aria-labelledby="pedido-titulo">
+  <header class="admin-order-detail__heading">
+    <div><p class="admin-dashboard__eyebrow">Pedido</p><h1 id="pedido-titulo"><%= @order.number %></h1><p>Criado em <%= l(@order.created_at, format: :short) %></p></div>
+    <%= link_to "Voltar aos pedidos", admin_orders_path, class: "admin-form__cancel" %>
+  </header>
+
+  <div class="admin-order-detail__layout">
+    <div class="admin-order-detail__content">
+      <section class="admin-order-card">
+        <header><div><h2>Itens do pedido</h2><p>Produtos registrados neste pedido.</p></div><span class="admin-order-detail__status admin-order-detail__status--<%= @order.status %>"><%= @order.status_label %></span></header>
+        <div class="admin-order-card__table"><table><thead><tr><th>Item</th><th>Quantidade</th><th>Unitário</th><th>Total</th></tr></thead><tbody><% @order.order_items.each do |item| %><tr><td><%= item.product_name %></td><td><%= item.quantity %></td><td><%= format_brl(item.unit_price) %></td><td><strong><%= format_brl(item.total) %></strong></td></tr><% end %></tbody></table></div>
+        <dl class="admin-order-card__totals"><div><dt>Subtotal</dt><dd><%= format_brl(@order.subtotal) %></dd></div><div><dt>Frete</dt><dd><%= format_brl(@order.delivery_fee) %></dd></div><div><dt>Desconto</dt><dd><%= format_brl(@order.discount_amount) %></dd></div><div class="admin-order-card__total"><dt>Total</dt><dd><%= format_brl(@order.total) %></dd></div></dl>
+      </section>
+
+      <section class="admin-order-card admin-order-detail__status-card">
+        <header><div><h2>Andamento e estoque</h2><p>Atualize o status operacional do pedido.</p></div></header>
+        <div class="admin-order-detail__status-content"><%= form_with model: [:admin, @order], class: "admin-form" do |form| %><div class="admin-form__field"><%= form.label :status, "Status" %><%= form.select :status, Order.statuses.keys.map { |status| [Order.new(status: status).status_label, status] } %></div><%= form.submit "Atualizar status", class: "button" %><% end %><p><strong>Estoque:</strong> <%= @order.stock_deducted? ? "já baixado" : "ainda não baixado" %>.</p></div>
+      </section>
+
+      <% if @order.stock_movements.any? %><section class="admin-order-card admin-order-detail__movements"><header><div><h2>Movimentos de estoque</h2><p>Histórico gerado para este pedido.</p></div></header><ul><% @order.stock_movements.order(:created_at).each do |movement| %><li><strong><%= movement.quantity.positive? ? "+" : "" %><%= movement.quantity %></strong><span><%= movement.reason %></span></li><% end %></ul></section><% end %>
+      <% if (entry = @order.automatic_financial_entry) %><section class="admin-order-card admin-order-detail__financial"><header><div><h2>Lançamento financeiro</h2><p>Receita vinculada e atualizada pelo status deste pedido.</p></div><span class="admin-order-detail__status admin-order-detail__status--<%= entry.status %>"><%= entry.paid? ? "Pago" : entry.cancelled? ? "Cancelado" : "Pendente" %></span></header><dl><div><dt>Descrição</dt><dd><%= entry.description %></dd></div><div><dt>Vencimento</dt><dd><%= entry.due_date&.strftime("%d/%m/%Y") || "—" %></dd></div><div><dt>Pago em</dt><dd><%= entry.paid_at&.strftime("%d/%m/%Y") || "—" %></dd></div><div><dt>Valor</dt><dd><%= format_brl(entry.amount) %></dd></div></dl></section><% end %>
+    </div>
+
+    <aside class="admin-order-detail__sidebar" aria-label="Resumo do pedido">
+      <section class="admin-order-sidebar-card"><h2>Resumo</h2><dl><div><dt>Cliente</dt><dd><%= @order.customer.name %></dd></div><div><dt>Telefone</dt><dd><%= format_phone(@order.customer.phone) %></dd></div><div><dt>Recebimento</dt><dd><%= @order.delivery? ? "Entrega" : "Retirada" %></dd></div><div><dt>Pagamento</dt><dd><%= @order.payment_label %></dd></div><% if @order.delivery? %><div class="admin-order-sidebar-card__address"><dt>Endereço</dt><dd><%= @order.delivery_address %></dd></div><% end %></dl></section>
+      <% if @order.notes.present? %><section class="admin-order-sidebar-card"><h2>Observações</h2><p><%= simple_format(@order.notes) %></p></section><% end %>
+    </aside>
+  </div>
 </section>

@@ -1,0 +1,8 @@
+<div class="admin-product-variant" data-nested-form-target="item" data-new-record="<%= variant_form.object.new_record? %>">
+  <%= variant_form.hidden_field :id if variant_form.object.persisted? %>
+  <%= variant_form.hidden_field :_destroy, value: "0", data: { nested_form_target: "destroy" } %>
+  <div class="admin-product-variant__heading"><strong>Opção de venda</strong><button type="button" class="admin-product-variant__remove" data-action="nested-form#remove">Remover</button></div>
+  <div class="admin-form__split"><div class="admin-form__field"><%= variant_form.label :name, "Nome da opção" %><%= variant_form.text_field :name, placeholder: "Ex.: Com goiabada — 10 unidades" %></div><div class="admin-form__field"><%= variant_form.label :price, "Preço" %><%= variant_form.text_field :price, inputmode: "numeric", data: { controller: "input-mask", input_mask_type_value: "currency", action: "input->input-mask#formatCurrency" } %></div></div>
+  <div class="admin-form__split"><div class="admin-form__field"><%= variant_form.label :quantity, "Estoque desta opção" %><%= variant_form.number_field :quantity, min: 0 %></div><div class="admin-form__field"><%= variant_form.label :low_stock_threshold, "Alerta de estoque baixo" %><%= variant_form.number_field :low_stock_threshold, min: 0 %></div></div>
+  <label class="admin-form__check"><%= variant_form.check_box :active %><span>Opção ativa na vitrine</span></label>
+</div>

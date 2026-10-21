@@ -25,6 +25,8 @@ class AdminOrderStatusTest < ActionDispatch::IntegrationTest
     get admin_order_path(@order)
     assert_response :success
     assert_select "form[action='#{admin_order_path(@order)}'][method='post']"
+    assert_select "a", text: "Enviar pedido pelo WhatsApp", count: 0
+    assert_select ".admin-order-detail__financial", /Lançamento financeiro/
     assert_select "li", /Baixa pelo pedido/
   end
 end
