@@ -1,5 +1,22 @@
 # Implementação
 
+## Confirmação ao adicionar produto ao carrinho — 21/10/2026
+
+- Ao adicionar um produto pelo cardápio, a resposta Turbo agora mostra a confirmação “Produto adicionado ao carrinho.”, sem abrir o carrinho automaticamente.
+- O contador e o conteúdo do carrinho continuam sendo atualizados na mesma resposta.
+
+
+## CTA único nos cards do cardápio — 21/10/2026
+
+- Cada card de produto agora mostra somente a ação “Comprar”; o botão ocupa toda a largura disponível. A ação continua desabilitada e identificada quando os pedidos estão pausados ou o produto está indisponível.
+
+
+## Alinhamento dos cards do cardápio no mobile — 21/10/2026
+
+- Os cards do catálogo agora usam coluna flexível: o conteúdo preenche a altura da linha e o bloco de preço/disponibilidade fica no final. Assim, nomes maiores não deslocam preços e botões em relação ao card vizinho.
+- Alteração somente de CSS em `app/assets/stylesheets/style.css`; não modifica produtos, estoque, carrinho ou checkout.
+- Verificação pendente: inspeção visual em navegador mobile e execução da suíte Rails neste ambiente.
+
 ## Seed de administrador em produção — 21/10/2026
 
 - Por decisão explícita da proprietária, a seed não impõe comprimento mínimo para a senha em produção.
@@ -129,7 +146,7 @@
 - Evidências: testes direcionados `checkout_rules_test.rb`, `cart_checkout_test.rb` e `store_setting_test.rb`: **21 testes, 137 asserções, zero falhas/erros**. Cobrem redirecionamento/codificação, estoque alterado, produto inativo, variação, mínimo, pausa após GET, dados inválidos, fraude de totais, fallback/área, rollback financeiro, privacidade e Turbo. Suíte completa: **30 testes, 177 asserções, duas falhas visuais preexistentes em FoundationAccessTest, zero erros**.
 - Configuração local atualizada com o WhatsApp informado pelo proprietário, normalizado com DDI brasileiro. Dados comerciais mínimos válidos e recebimento ativado localmente para validar o fluxo de carrinho/checkout. O número foi armazenado somente no banco de desenvolvimento, sem inclusão no código ou nesta documentação.
 - Pendências fora deste fluxo básico: cupons e promoções/brindes (seções 10–11, incluindo integração ao carrinho e checkout), CRUD de áreas/configurações, ciclo administrativo de estoque/status e financeiro, snapshot próprio de identificação do cliente para reenvios históricos, validação de navegador e abertura manual do aplicativo WhatsApp. A consulta real ao ViaCEP não foi exercitada nesta etapa. Nenhuma mensagem foi enviada e nenhuma configuração de produção foi modificada.
-- O cardápio exibe, em cada produto, “Detalhes” e uma ação de compra: produtos sem variação usam “Adicionar” com quantidade inicial de uma unidade; produtos com opções ativas usam “Comprar”, levando à escolha obrigatória da opção antes de adicionar. Quando o recebimento está pausado ou o item está indisponível, a ação correspondente permanece visível e desabilitada com a explicação apropriada.
+- O cardápio exibe somente a ação “Comprar” em cada produto disponível. Sem variações, ela adiciona uma unidade; com opções ativas, leva à escolha obrigatória antes de adicionar. Quando o recebimento está pausado ou o item está indisponível, o aviso correspondente permanece visível e desabilitado.
 - Evidência complementar: `product_catalog_test.rb` e `checkout_rules_test.rb` passaram com **21 testes, 141 asserções, zero falhas/erros**.
 
 ## Status de pedidos e estoque — 15/10/2026

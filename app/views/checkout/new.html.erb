@@ -2,9 +2,9 @@
 
 <section class="order-checkout" data-controller="checkout" data-checkout-subtotal-value="<%= @cart.subtotal %>" data-checkout-fee-value="<%= StoreSetting.current.default_delivery_fee %>" aria-labelledby="checkout-titulo">
   <header class="order-checkout__heading">
-    <%= link_to carrinho_path, class: "order-checkout__back" do %>
+    <%= link_to produtos_path, class: "order-checkout__back" do %>
       <%= checkout_icon(:back) %>
-      <span>Voltar ao carrinho</span>
+      <span>Voltar ao Cardápio</span>
     <% end %>
     <p class="storefront-kicker">Último passo</p>
     <h1 id="checkout-titulo">Detalhes do pedido</h1>

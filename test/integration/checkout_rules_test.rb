@@ -173,7 +173,7 @@ class CheckoutRulesTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "turbo-stream[target='cart-count'] template", text: "1"
     assert_select "turbo-stream[target='cart-drawer-content']"
-    assert_select "turbo-stream[target='cart-feedback']", count: 0
+    assert_select "turbo-stream[target='cart-feedback'] template", text: "Produto adicionado ao carrinho."
     assert_select "turbo-stream[target='drawer']", count: 0
     assert_select "turbo-stream[target='cart-drawer-content'] a[href='#{finalizar_pedido_path}']", "Finalizar pedido"
     assert_select "turbo-stream[target='cart-drawer-content'] .cart-drawer__item-image, turbo-stream[target='cart-drawer-content'] .cart-drawer__item-placeholder", 1

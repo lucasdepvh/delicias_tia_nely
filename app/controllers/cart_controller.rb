@@ -43,7 +43,7 @@ class CartController < PublicController
           turbo_stream.update("cart-drawer-content", partial: "cart/drawer"),
           turbo_stream.update("cart-page", partial: "cart/content", locals: { cart: current_cart })
         ]
-        streams << turbo_stream.update("cart-feedback", partial: "cart/feedback", locals: { message: message, error: true }) if error
+        streams << turbo_stream.update("cart-feedback", partial: "cart/feedback", locals: { message: message, error: error })
 
         render turbo_stream: streams
       end

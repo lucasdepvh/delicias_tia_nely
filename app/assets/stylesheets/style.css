@@ -156,7 +156,13 @@ h2 { font-size:clamp(1.6rem,4vw,2.3rem); }
 .product-card__visual img,.product-detail__visual img{width:100%;height:100%;object-fit:cover}.admin-product-image-preview{width:120px;height:120px;object-fit:cover;border:1px solid #dbc1b8;border-radius:.65rem}
 
 /* Ações de compra no cardápio. */
-.product-card__actions { display:grid; grid-template-columns:1fr 1fr; gap:.55rem; padding:0 1rem 1rem; }.product-card__details,.product-card__buy { display:flex; width:100%; min-height:42px; align-items:center; justify-content:center; box-sizing:border-box; border:1px solid #dbc1b8; border-radius:.65rem; background:#fff; color:#55433c; font:inherit; font-size:.82rem; font-weight:800; text-decoration:none; cursor:pointer; }.product-card__buy { border-color:#94451f; background:#94451f; color:#fff; }.product-card__buy:hover { border-color:#79310c; background:#79310c; color:#fff; }.product-card__buy--disabled,.product-card__buy--disabled:hover { border-color:#dbc1b8; background:#f1ded4; color:#88736a; cursor:not-allowed; }.product-card__purchase { margin:0; }
+.product-card__actions { display:grid; grid-template-columns:1fr; gap:.55rem; padding:0 1rem 1rem; }.product-card__details,.product-card__buy { display:flex; width:100%; min-height:42px; align-items:center; justify-content:center; box-sizing:border-box; border:1px solid #dbc1b8; border-radius:.65rem; background:#fff; color:#55433c; font:inherit; font-size:.82rem; font-weight:800; text-decoration:none; cursor:pointer; }.product-card__buy { border-color:#94451f; background:#94451f; color:#fff; }.product-card__buy:hover { border-color:#79310c; background:#79310c; color:#fff; }.product-card__buy--disabled,.product-card__buy--disabled:hover { border-color:#dbc1b8; background:#f1ded4; color:#88736a; cursor:not-allowed; }.product-card__purchase { margin:0; }
+
+/* Mantem preco e acoes alinhados entre cards de uma mesma linha, mesmo com titulos longos. */
+.product-card { display:flex; flex-direction:column; }
+.product-card__link { display:flex; flex:1 1 auto; flex-direction:column; }
+.product-card__content { flex:1 1 auto; }
+.product-card__footer { margin-top:auto; }
 
 /* Administração: área de trabalho mais ampla e controles compactos no desktop. */
 @media (min-width:701px) { .admin-dashboard-header__inner,.admin-dashboard-main,.admin-dashboard-flash { width:min(1120px,calc(100% - 3rem)); }.admin-dashboard-main { padding-top:1rem; }.admin-resource { max-width:1040px; }.admin-resource--form { max-width:920px; }.admin-form { max-width:900px; padding:1.1rem 1.2rem; gap:.8rem; }.admin-form__field { gap:.3rem; }.admin-form textarea { min-height:82px; }.admin-resource__heading { margin-bottom:.85rem; }.admin-dashboard { gap:1rem; }.admin-dashboard__metrics { gap:.6rem; }.admin-dashboard__metric { min-height:132px; padding:.9rem; }.admin-dashboard__steps { gap:.6rem; }.admin-dashboard__steps article { padding:.85rem; } }
