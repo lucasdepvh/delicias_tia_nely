@@ -8,11 +8,17 @@ class FoundationAccessTest < ActionDispatch::IntegrationTest
     assert_select ".storefront-empty-card", /sabores serão publicados/
     assert_select ".storefront-nav a[href='#{contato_path}']", count: 0
     assert_select ".storefront-nav svg.navigation-icon", 1
+    assert_select "button.storefront-nav__menu-toggle[aria-controls='navegacao-principal']"
+    assert_select "#navegacao-principal > a", 3
+    assert_select ".storefront-nav__admin-label", "Administração"
     assert_select "a.floating-cart svg.navigation-icon"
     assert_select "footer a[href='https://portifolio-silk-six-70.vercel.app/'][target='_blank']", "Lucas Martins"
 
     get quem_somos_path
     assert_response :success
+    assert_select "h1", "Quem Somos"
+    assert_select ".institutional-page__intro", /Nossa história começou muito antes da primeira encomenda/
+    assert_select ".institutional-page__signature", /Sabor de casa, memórias que ficam/
 
     get contato_path
     assert_response :success
@@ -50,7 +56,7 @@ class FoundationAccessTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_root_path
     assert_not setting.reload.accepting_orders
     follow_redirect!
-    assert_select ".flash.flash--alert", "Não foi possível ativar os pedidos. Atualize o WhatsApp válido da loja antes de continuar."
+    assert_select ".admin-toast.admin-toast--alert p", "Não foi possível ativar os pedidos. Atualize o WhatsApp válido da loja antes de continuar."
 
     setting.update!(whatsapp_number: "5511999999999")
     post admin_toggle_orders_path
@@ -58,7 +64,7 @@ class FoundationAccessTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_root_path
     assert setting.reload.accepting_orders
     follow_redirect!
-    assert_select ".flash", "Loja habilitada para receber pedidos."
+    assert_select ".admin-toast p", "Loja habilitada para receber pedidos."
   end
 
   test "administrator can sign in and out" do

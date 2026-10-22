@@ -1,1 +1,134 @@
-<% content_for :title, "Visão geral" %><section class="admin-overview"><header class="admin-resource__heading"><div><p class="admin-dashboard__eyebrow">Dashboard</p><h1>Visão geral</h1><p>Resumo operacional da loja.</p></div><div class="admin-overview__actions"><%= link_to "Ver pedidos", admin_orders_path, class: "admin-form__cancel" %><%= link_to "Novo produto", new_admin_product_path, class: "button" %></div></header><section class="admin-overview__store"><span class="material-symbols-rounded">storefront</span><div><small>Status da loja</small><strong><%= @store_setting.accepting_orders? ? "Online para receber pedidos" : "Loja pausada" %></strong><p><%= @store_setting.accepting_orders? ? "Novos pedidos podem ser iniciados." : "Novos pedidos ficam bloqueados até a reativação." %></p></div><%= button_to admin_toggle_orders_path, class: "admin-overview__toggle", form: { data: { turbo_confirm: @store_setting.accepting_orders? ? "Pausar novos pedidos?" : "Habilitar novos pedidos?" } } do %><span class="material-symbols-rounded"><%= @store_setting.accepting_orders? ? "pause_circle" : "play_circle" %></span><%= @store_setting.accepting_orders? ? "Pausar pedidos" : "Ativar pedidos" %><% end %></section><div class="admin-overview__metrics"><article><span>Faturamento hoje</span><strong><%= format_brl(@today_total) %></strong></article><article><span>Pedidos pendentes</span><strong><%= @pending_orders %></strong></article><article><span>Pedidos do dia</span><strong><%= @today_orders.respond_to?(:count) ? @today_orders.count : 0 %></strong></article><article><span>Alertas de estoque</span><strong><%= @low_stock_products.count %></strong></article></div><div class="admin-overview__grid"><section><header><h2>Alertas de estoque</h2><%= link_to "Produtos", admin_products_path %></header><% if @low_stock_products.any? %><% @low_stock_products.each do |product| %><article><span class="material-symbols-rounded">inventory_2</span><div><strong><%= product.name %></strong><small><%= product.quantity.zero? ? "Esgotado" : "Estoque baixo: #{product.quantity}" %></small></div><%= link_to edit_admin_product_path(product) do %><span class="material-symbols-rounded">edit</span><% end %></article><% end %><% else %><p>Nenhum alerta de estoque no momento.</p><% end %></section><section><header><h2>Ações rápidas</h2></header><%= link_to new_admin_product_path do %><span>Adicionar produto</span><span class="material-symbols-rounded">add</span><% end %><%= link_to admin_orders_path do %><span>Conferir pedidos</span><span class="material-symbols-rounded">arrow_forward</span><% end %><%= link_to admin_financial_entries_path do %><span>Ver financeiro</span><span class="material-symbols-rounded">account_balance_wallet</span><% end %></section></div><section class="admin-overview__recent"><header><h2>Vendas recentes</h2><%= link_to "Ver todos", admin_orders_path %></header><% if @recent_orders.any? %><% @recent_orders.each do |order| %><article><strong><%= order.number %></strong><span><%= order.customer.name %></span><span><%= format_brl(order.total) %></span><span><%= order.status_label %></span><%= link_to admin_order_path(order) do %><span class="material-symbols-rounded">visibility</span><% end %></article><% end %><% else %><p>Os pedidos recentes aparecerão aqui quando forem recebidos.</p><% end %></section></section>
+<% content_for :title, "Visão geral" %>
+
+<section class="admin-overview">
+  <header class="admin-overview__hero">
+    <div>
+      <p class="admin-dashboard__eyebrow">Painel da loja</p>
+      <h1>Visão geral</h1>
+      <p>Acompanhe pedidos, estoque e resultados da Delícias da Tia Nely.</p>
+    </div>
+    <div class="admin-overview__actions">
+      <%= link_to admin_orders_path, class: "admin-overview__secondary-action" do %>
+        <span class="material-symbols-rounded" aria-hidden="true">receipt_long</span>
+        Ver pedidos
+      <% end %>
+      <%= link_to new_admin_product_path, class: "admin-overview__primary-action" do %>
+        <span class="material-symbols-rounded" aria-hidden="true">add</span>
+        Novo produto
+      <% end %>
+    </div>
+  </header>
+
+  <section class="admin-overview__store <%= "admin-overview__store--open" if @store_setting.accepting_orders? %>" aria-labelledby="status-loja">
+    <div class="admin-overview__store-icon">
+      <span class="material-symbols-rounded" aria-hidden="true"><%= @store_setting.accepting_orders? ? "storefront" : "store" %></span>
+    </div>
+    <div class="admin-overview__store-copy">
+      <p>Status da loja</p>
+      <h2 id="status-loja"><%= @store_setting.accepting_orders? ? "Online para receber pedidos" : "Loja pausada" %></h2>
+      <span><%= @store_setting.accepting_orders? ? "Novos pedidos podem ser iniciados normalmente." : "Novos pedidos ficam bloqueados até a reativação." %></span>
+    </div>
+    <%= button_to admin_toggle_orders_path, class: "admin-overview__toggle", form: { data: { turbo_confirm: @store_setting.accepting_orders? ? "Pausar novos pedidos?" : "Habilitar novos pedidos?" } } do %>
+      <span class="material-symbols-rounded" aria-hidden="true"><%= @store_setting.accepting_orders? ? "pause_circle" : "play_circle" %></span>
+      <%= @store_setting.accepting_orders? ? "Pausar pedidos" : "Ativar pedidos" %>
+    <% end %>
+  </section>
+
+  <section class="admin-overview__metrics" aria-label="Resumo de hoje">
+    <article class="admin-overview__metric admin-overview__metric--revenue">
+      <span class="material-symbols-rounded" aria-hidden="true">payments</span>
+      <p>Faturamento hoje</p>
+      <strong><%= format_brl(@today_total) %></strong>
+    </article>
+    <article class="admin-overview__metric">
+      <span class="material-symbols-rounded" aria-hidden="true">hourglass_top</span>
+      <p>Pedidos pendentes</p>
+      <strong><%= @pending_orders %></strong>
+    </article>
+    <article class="admin-overview__metric">
+      <span class="material-symbols-rounded" aria-hidden="true">receipt_long</span>
+      <p>Pedidos do dia</p>
+      <strong><%= @today_orders.respond_to?(:count) ? @today_orders.count : 0 %></strong>
+    </article>
+    <article class="admin-overview__metric <%= "admin-overview__metric--attention" if @low_stock_products.any? %>">
+      <span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>
+      <p>Alertas de estoque</p>
+      <strong><%= @low_stock_products.count %></strong>
+    </article>
+  </section>
+
+  <div class="admin-overview__grid">
+    <section class="admin-overview__panel" aria-labelledby="estoque-titulo">
+      <header>
+        <div>
+          <p class="admin-dashboard__eyebrow">Acompanhamento</p>
+          <h2 id="estoque-titulo">Alertas de estoque</h2>
+        </div>
+        <%= link_to "Ver produtos", admin_products_path %>
+      </header>
+      <% if @low_stock_products.any? %>
+        <div class="admin-overview__stock-list">
+          <% @low_stock_products.each do |product| %>
+            <article>
+              <span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>
+              <div>
+                <strong><%= product.name %></strong>
+                <small><%= product.quantity.zero? ? "Esgotado" : "Estoque baixo: #{product.quantity}" %></small>
+              </div>
+              <%= link_to edit_admin_product_path(product), aria: { label: "Editar #{product.name}" } do %><span class="material-symbols-rounded" aria-hidden="true">edit</span><% end %>
+            </article>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="admin-overview__empty-state">
+          <span class="material-symbols-rounded" aria-hidden="true">check_circle</span>
+          <p>Nenhum alerta de estoque no momento.</p>
+        </div>
+      <% end %>
+    </section>
+
+    <section class="admin-overview__panel admin-overview__quick-actions" aria-labelledby="acoes-titulo">
+      <header>
+        <div>
+          <p class="admin-dashboard__eyebrow">Atalhos</p>
+          <h2 id="acoes-titulo">Ações rápidas</h2>
+        </div>
+      </header>
+      <div>
+        <%= link_to new_admin_product_path do %><span class="material-symbols-rounded" aria-hidden="true">add_circle</span><span><strong>Adicionar produto</strong><small>Cadastre um novo item no cardápio</small></span><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><% end %>
+        <%= link_to admin_orders_path do %><span class="material-symbols-rounded" aria-hidden="true">receipt_long</span><span><strong>Conferir pedidos</strong><small>Acompanhe os pedidos recebidos</small></span><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><% end %>
+        <%= link_to admin_financial_entries_path do %><span class="material-symbols-rounded" aria-hidden="true">account_balance_wallet</span><span><strong>Ver financeiro</strong><small>Consulte receitas e despesas</small></span><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><% end %>
+      </div>
+    </section>
+  </div>
+
+  <section class="admin-overview__recent admin-overview__panel" aria-labelledby="vendas-titulo">
+    <header>
+      <div>
+        <p class="admin-dashboard__eyebrow">Últimas movimentações</p>
+        <h2 id="vendas-titulo">Vendas recentes</h2>
+      </div>
+      <%= link_to "Ver todos os pedidos", admin_orders_path %>
+    </header>
+    <% if @recent_orders.any? %>
+      <div class="admin-overview__recent-list">
+        <% @recent_orders.each do |order| %>
+          <article>
+            <div class="admin-overview__recent-order">
+              <span class="material-symbols-rounded" aria-hidden="true">receipt_long</span>
+              <div><strong><%= order.number %></strong><small><%= order.customer.name %></small></div>
+            </div>
+            <strong class="admin-overview__recent-total"><%= format_brl(order.total) %></strong>
+            <span class="admin-overview__status"><%= order.status_label %></span>
+            <%= link_to admin_order_path(order), aria: { label: "Ver pedido #{order.number}" } do %><span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span><% end %>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="admin-overview__empty-state">
+        <span class="material-symbols-rounded" aria-hidden="true">receipt_long</span>
+        <p>Os pedidos recentes aparecerão aqui quando forem recebidos.</p>
+      </div>
+    <% end %>
+  </section>
+</section>

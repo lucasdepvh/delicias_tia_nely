@@ -1,14 +1,33 @@
-<% content_for :title, "Quem somos" %>
-<section class="institutional-page" aria-labelledby="sobre-titulo">
-  <div class="institutional-page__intro">
+<% content_for :title, "Quem Somos" %>
+<section class="institutional-page institutional-page--about" aria-labelledby="sobre-titulo">
+  <header class="institutional-page__intro">
     <p class="storefront-kicker">Delícias da Tia Nely</p>
-    <h1 id="sobre-titulo">Receitas feitas para acolher.</h1>
-    <p>Esta é a vitrine da Delícias da Tia Nely: um espaço para conhecer as receitas que vão saindo da cozinha com carinho.</p>
+    <h1 id="sobre-titulo">Quem Somos</h1>
+    <p>Nossa história começou muito antes da primeira encomenda.</p>
+  </header>
+
+  <div class="institutional-page__story">
+    <p>Começou na cozinha de casa, entre aromas que despertam lembranças, receitas preparadas com carinho e momentos especiais em família.</p>
+
+    <p>À frente dessa história está a Tia Nely, uma avó que une sua experiência em cozinha industrial ao cuidado dos preparos caseiros. De suas mãos nascem rosquinhas, mães-bentas, pães de queijo, biscoitos, pudins e outras delícias que há muito tempo fazem parte da nossa mesa.</p>
+
+    <p>Foi da vontade de compartilhar esses sabores que nasceu a Delícias da Tia Nely, levando o gostinho de comida de vó para além da nossa casa.</p>
+
+    <p>Ao seu lado está Aleandra, sua filha, responsável pelas encomendas e pelo atendimento. Juntas, dedicam-se a uma produção artesanal, feita principalmente sob encomenda, com atenção à qualidade de cada preparo.</p>
+
+    <p>Mais do que oferecer delícias caseiras, queremos compartilhar um pedacinho da nossa história e estar presentes nos seus momentos especiais.</p>
+
+    <p>Porque algumas receitas alimentam o corpo. Outras alimentam também a memória e o coração.</p>
   </div>
-  <div class="institutional-page__cards">
-    <article><span aria-hidden="true">♡</span><h2>Feito com cuidado</h2><p>O cardápio é organizado para você encontrar os sabores de forma simples e agradável.</p></article>
-    <article><span aria-hidden="true">⌂</span><h2>De perto</h2><p>Informações sobre atendimento e pedidos serão publicadas somente quando estiverem confirmadas pela loja.</p></article>
-    <article><span aria-hidden="true">✦</span><h2>Novidades</h2><p>O catálogo pode mudar conforme os sabores preparados pela Tia Nely.</p></article>
-  </div>
-  <%= link_to "Conhecer o cardápio", produtos_path, class: "storefront-primary-action" %>
+
+  <aside class="institutional-page__closing" aria-labelledby="convite-titulo">
+    <h2 id="convite-titulo">Que tal levar esse sabor para a sua mesa?</h2>
+    <p>Conheça nosso cardápio, escolha suas delícias favoritas e faça sua encomenda. Será um prazer preparar algo especial para você!</p>
+    <%= link_to "Conhecer nosso cardápio", produtos_path, class: "storefront-primary-action" %>
+  </aside>
+
+  <p class="institutional-page__signature">
+    <strong>Delícias da Tia Nely</strong>
+    <span>Sabor de casa, memórias que ficam.</span>
+  </p>
 </section>

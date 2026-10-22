@@ -26,15 +26,26 @@
           <%= image_tag "Logo Principal.png", class: "storefront-brand__mark", alt: "Logo Delícias da Tia Nely" %>
           <span><strong><%= brand_name %></strong><small>Sabores preparados com carinho</small></span>
         <% end %>
-        <nav class="storefront-nav" aria-label="Navegação principal">
-          <%= link_to "Cardápio", root_path, aria: { current: current_page?(root_path) || current_page?(produtos_path) || current_page?(sabores_path) ? "page" : nil } %>
-          <%= link_to "Quem somos", quem_somos_path %>
-          <% if admin_signed_in? %>
-            <%= link_to admin_root_path, class: "storefront-nav__admin" do %><%= navigation_icon(:login) %> Administração<% end %>
-          <% else %>
-            <%= link_to new_admin_session_path, class: "storefront-nav__admin" do %><%= navigation_icon(:login) %> Administração<% end %>
-          <% end %>
-        </nav>
+        <nav class="storefront-nav" aria-label="Navegação principal" data-controller="mobile-menu" data-action="keydown->mobile-menu#closeWithEscape">
+  <button type="button" class="storefront-nav__menu-toggle" data-mobile-menu-target="button" data-action="mobile-menu#toggle" aria-expanded="false" aria-controls="navegacao-principal">
+    <span aria-hidden="true">☰</span>
+    <span class="visually-hidden">Abrir menu de navegação</span>
+  </button>
+
+  <div id="navegacao-principal" class="storefront-nav__links" data-mobile-menu-target="menu">
+    <%= link_to "Cardápio", root_path, aria: { current: current_page?(root_path) || current_page?(produtos_path) || current_page?(sabores_path) ? "page" : nil }, data: { action: "click->mobile-menu#close" } %>
+    <%= link_to "Quem somos", quem_somos_path, aria: { current: current_page?(quem_somos_path) ? "page" : nil }, data: { action: "click->mobile-menu#close" } %>
+    <% if admin_signed_in? %>
+      <%= link_to admin_root_path, class: "storefront-nav__admin", aria: { label: "Administração" }, data: { action: "click->mobile-menu#close" } do %>
+        <%= navigation_icon(:login) %><span class="storefront-nav__admin-label">Administração</span>
+      <% end %>
+    <% else %>
+      <%= link_to new_admin_session_path, class: "storefront-nav__admin", aria: { label: "Administração" }, data: { action: "click->mobile-menu#close" } do %>
+        <%= navigation_icon(:login) %><span class="storefront-nav__admin-label">Administração</span>
+      <% end %>
+    <% end %>
+  </div>
+</nav>
       </div>
     </header>
     <% flash.each do |type, message| %>

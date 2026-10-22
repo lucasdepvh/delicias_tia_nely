@@ -293,3 +293,34 @@ As verificações de Rails precisam ser executadas no ambiente que tem Ruby 3.4.
 - O visual foi adaptado da referência enviada: cartões leves, paleta terracota/creme e foco em nome, categoria, preço e disponibilidade. Dados fictícios da referência — avaliações, descontos, fotos externas, opções de bolo, entrega e compra simulada — não foram incorporados.
 - Imagens cadastráveis, carrinho, checkout e paginação completa de catálogo permanecem pendentes. A listagem atual limita a 12 produtos e a home mostra até 24, conforme o padrão de volume da especificação.
 - Evidências previstas: testes de integração para rotas públicas, filtragem de produtos ativos, disponibilidade e acesso direto a produto inativo.
+
+
+## Página Quem Somos — 21/10/2026
+
+- A página pública “Quem Somos” passou a apresentar a história fornecida pela proprietária: origem familiar da Delícias da Tia Nely, atuação da Tia Nely e da Aleandra, produção artesanal sob encomenda e convite ao cardápio.
+- O conteúdo foi organizado em cabeçalho, narrativa, chamada ao cardápio e assinatura final, sem acrescentar contatos ou informações comerciais não fornecidas.
+- Evidência: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/foundation_access_test.rb` aprovado com **8 testes, 63 asserções, zero falhas ou erros**.
+
+
+## Navegação pública em mobile — 21/10/2026
+
+- A navegação pública agora agrupa Cardápio, Quem Somos e Administração em um menu hambúrguer em telas de até 620 px. O menu abre pelo botão próprio, fecha ao escolher um destino e pode ser fechado com Esc.
+- Em telas maiores, os destinos permanecem visíveis e Administração passou a usar somente o ícone, com rótulo acessível para leitores de tela.
+- A página Quem Somos preserva a assinatura “Delícias da Tia Nely — Sabor de casa, memórias que ficam.”.
+- Evidência: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/foundation_access_test.rb` aprovado com **8 testes, 68 asserções, zero falhas ou erros**.
+
+
+- Ajuste posterior: dentro do menu hambúrguer, Administração é exibida como item completo com ícone e texto; fora dele, permanece como botão somente com ícone. Evidência: teste de integração público aprovado com **8 testes, 68 asserções, zero falhas ou erros**.
+
+
+## Produtos relacionados em pares — 21/10/2026
+
+- A seção “Você também pode gostar” do detalhe do produto agora mantém os cards em duas colunas, inclusive em telas de até 480 px, em vez de empilhá-los em uma única coluna.
+- Evidência: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/product_catalog_test.rb` aprovado com **7 testes, 54 asserções, zero falhas ou erros**.
+
+
+## Dashboard administrativo e avisos temporários — 21/10/2026
+
+- O dashboard administrativo foi reorganizado com cabeçalho orientado à operação, status da loja destacado, métricas com ícones, ações rápidas descritivas, estados vazios e lista de vendas recentes mais legível, preservando os dados e rotas existentes.
+- Avisos administrativos agora aparecem como toast centralizado, podem ser fechados manualmente e desaparecem após cinco segundos. Avisos de erro preservam cor e ícone distintos.
+- Evidência: `RAILS_ENV=test /usr/local/rbenv/versions/3.4.2/bin/ruby bin/rails test test/integration/foundation_access_test.rb` aprovado com **8 testes, 68 asserções, zero falhas ou erros**.
