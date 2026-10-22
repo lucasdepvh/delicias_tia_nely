@@ -12,7 +12,6 @@ admin_password = ENV["SEED_ADMIN_PASSWORD"].presence
 
 if admin_email.present? || admin_password.present?
   raise "Defina SEED_ADMIN_EMAIL e SEED_ADMIN_PASSWORD juntos." unless admin_email.present? && admin_password.present?
-  raise "Em produção, SEED_ADMIN_PASSWORD deve ter ao menos 16 caracteres." if Rails.env.production? && admin_password.length < 16
 
   Admin.find_or_create_by!(email: admin_email.strip.downcase) do |admin|
     admin.password = admin_password

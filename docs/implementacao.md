@@ -1,5 +1,11 @@
 # Implementação
 
+## Seed de administrador em produção — 21/10/2026
+
+- Por decisão explícita da proprietária, a seed não impõe comprimento mínimo para a senha em produção.
+- Permanecem obrigatórias as duas variáveis juntas; a conta é criada somente se o e-mail ainda não existir, sem redefinir senha já cadastrada.
+- Evidência: teste de seed aprovado com 1 teste, 18 asserções, zero falhas ou erros.
+
 ## Escolha e cadastro de opções de produto — 21/10/2026
 
 - O formulário administrativo de produto agora contém a seção “Opções e preços”. Ela permite adicionar/remover tamanhos ou sabores, informar preço, estoque, alerta de estoque baixo e ativação de cada opção, sem depender de uma tela separada.
@@ -199,7 +205,7 @@ O recebimento de pedidos está ativado na configuração local com dados comerci
   SEED_ADMIN_EMAIL="seu-email@exemplo.com" SEED_ADMIN_PASSWORD="escolha-uma-senha-segura" bin/rails db:seed
   ```
 
-- Em produção, a senha precisa ter pelo menos 16 caracteres. Nenhuma credencial ou dado comercial foi colocado no repositório. Produtos, pedidos, estoque e financeiro continuam pendentes porque seus modelos ainda não foram implementados.
+- A seed exige que e-mail e senha sejam informados juntos, mas não impõe comprimento mínimo para a senha em produção. Nenhuma credencial ou dado comercial foi colocado no repositório. Produtos, pedidos, estoque e financeiro continuam pendentes porque seus modelos ainda não foram implementados.
 - Verificações executadas no banco de teste: `RAILS_ENV=test bin/rails db:seed` concluído duas vezes (idempotência) e `RAILS_ENV=test bin/rails test` aprovado com **7 testes, 28 asserções, nenhuma falha ou erro**.
 
 ### Catálogo inicial — 04/10/2026
